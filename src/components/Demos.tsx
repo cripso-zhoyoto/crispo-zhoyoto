@@ -256,12 +256,23 @@ export default function Demos({ cms }: DemosProps) {
                     )}
 
                     {demo.previewUrl && (
-                      <Link 
-                        to={demo.previewUrl}
-                        className="w-full sm:w-auto px-10 py-5 rounded-2xl border-2 border-purple-600 dark:border-purple-400 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all text-sm font-black tracking-[0.2em] text-center uppercase"
-                      >
-                        PREVIEW
-                      </Link>
+                      demo.previewUrl.startsWith('http') ? (
+                        <a 
+                          href={demo.previewUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full sm:w-auto px-10 py-5 rounded-2xl border-2 border-purple-600 dark:border-purple-400 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all text-sm font-black tracking-[0.2em] text-center uppercase"
+                        >
+                          PREVIEW
+                        </a>
+                      ) : (
+                        <Link 
+                          to={demo.previewUrl}
+                          className="w-full sm:w-auto px-10 py-5 rounded-2xl border-2 border-purple-600 dark:border-purple-400 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all text-sm font-black tracking-[0.2em] text-center uppercase"
+                        >
+                          PREVIEW
+                        </Link>
+                      )
                     )}
 
                     <a 

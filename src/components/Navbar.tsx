@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Menu, X, ArrowRight, Sun, Moon } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, ArrowRight, Sun, Moon, ArrowLeft } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 export default function Navbar({ cms }: { cms?: any }) {
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -51,11 +52,31 @@ export default function Navbar({ cms }: { cms?: any }) {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex-shrink-0 cursor-pointer">
-            <span className={`font-sans font-black text-2xl tracking-tighter transition-colors duration-500 ${isScrolled ? 'text-white' : 'text-black'}`}>
-              CRISPO<span className="text-cyan-500">.</span>
-            </span>
-          </Link>
+          <div className="flex items-center space-x-4">
+            <AnimatePresence>
+              {!isHome && (
+                <motion.button
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  onClick={() => navigate(-1)}
+                  className={`p-2.5 rounded-2xl transition-all active:scale-95 flex items-center justify-center border ${
+                    isScrolled 
+                      ? 'bg-zinc-800/80 border-zinc-700 text-white hover:bg-zinc-700' 
+                      : 'bg-white border-zinc-200 text-zinc-900 hover:bg-zinc-50 shadow-sm'
+                  }`}
+                  aria-label="Go Back"
+                >
+                  <ArrowLeft size={18} strokeWidth={3} />
+                </motion.button>
+              )}
+            </AnimatePresence>
+            <Link to="/" className="flex-shrink-0 cursor-pointer">
+              <span className={`font-sans font-black text-2xl tracking-tighter transition-colors duration-500 ${isScrolled ? 'text-white' : 'text-black'}`}>
+                CRISPO<span className="text-cyan-500">.</span>
+              </span>
+            </Link>
+          </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-12">

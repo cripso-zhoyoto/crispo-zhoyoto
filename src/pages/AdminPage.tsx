@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { db, auth, storage, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, addDoc, doc, setDoc, deleteDoc, updateDoc, query, orderBy, onSnapshot, serverTimestamp } from 'firebase/firestore';
@@ -159,6 +159,13 @@ export default function AdminPage() {
   const [enquiries, setEnquiries] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
+  const [syncStatus, setSyncStatus] = useState<'saved' | 'saving' | 'error'>('saved');
+
+  // Refs for tracking initial load and debouncing
+  const isInitialCMS = useRef(true);
+  const isInitialSettings = useRef(true);
+  const cmsTimeout = useRef<NodeJS.Timeout | null>(null);
+  const settingsTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Loading & Validation states
   const [isSaving, setIsSaving] = useState(false);
@@ -300,16 +307,16 @@ export default function AdminPage() {
             caseStudyBtnText: "Case Study"
           },
           footer: {
-            copyrightLine: "Crispo Digital Agency. Engineered with Magic.",
-            policyText: "Policy",
-            faqText: "Neural Sync (FAQ)",
-            socialLinks: {
-              linkedin: "https://linkedin.com",
-              instagram: "https://www.instagram.com/Lubuuii",
-              youtube: "#",
-              github: "#"
-            }
-          },
+  copyrightLine: "Crispo Digital Agency. Engineered with Magic.",
+  policyText: "Policy",
+  faqText: "Neural Sync (FAQ)",
+  socialLinks: {
+    linkedin: "https://www.linkedin.com/in/lubab-aymen-p-5a5009360",
+    instagram: "https://www.instagram.com/Lubuuii",
+    youtube: "https://www.youtube.com/channel/UCAjKk0aZGhmVCKb84KTo_JA",
+    github: "#"
+  }
+},
           servicePages: {
             'web-app-demos': {
               id: 'web-app-demos',
@@ -389,9 +396,62 @@ export default function AdminPage() {
     return () => {
       unsubDemos();
       unsubSettings();
+      unsubCMS();
       unsubEnquiries();
     };
   }, [user]);
+
+  // Auto-Sync CMS
+  useEffect(() => {
+    if (isInitialCMS.current) {
+      if (cms) isInitialCMS.current = false;
+      return;
+    }
+    if (!cms) return;
+
+    if (cmsTimeout.current) clearTimeout(cmsTimeout.current);
+    setSyncStatus('saving');
+    
+    cmsTimeout.current = setTimeout(async () => {
+      try {
+        await setDoc(doc(db, 'settings', 'cms'), cms);
+        setSyncStatus('saved');
+      } catch (err) {
+        console.error('CMS Auto-sync failed:', err);
+        setSyncStatus('error');
+      }
+    }, 1000);
+
+    return () => {
+      if (cmsTimeout.current) clearTimeout(cmsTimeout.current);
+    };
+  }, [cms]);
+
+  // Auto-Sync Settings
+  useEffect(() => {
+    if (isInitialSettings.current) {
+      if (settings) isInitialSettings.current = false;
+      return;
+    }
+    if (!settings) return;
+
+    if (settingsTimeout.current) clearTimeout(settingsTimeout.current);
+    setSyncStatus('saving');
+
+    settingsTimeout.current = setTimeout(async () => {
+      try {
+        await setDoc(doc(db, 'settings', 'global'), settings);
+        setSyncStatus('saved');
+      } catch (err) {
+        console.error('Settings Auto-sync failed:', err);
+        setSyncStatus('error');
+      }
+    }, 1000);
+
+    return () => {
+      if (settingsTimeout.current) clearTimeout(settingsTimeout.current);
+    };
+  }, [settings]);
 
   const handleLogin = async () => {
     const provider = new GoogleAuthProvider();
@@ -496,8 +556,7 @@ export default function AdminPage() {
 
   const handleSaveDemo = async () => {
     if (!validateForm('demo', currentDemo)) return;
-    setPendingSaveAction({ type: 'demo' });
-    setIsConfirmModalOpen(true);
+    executeSaveDemo();
   };
 
   const executeSaveDemo = async () => {
@@ -546,6 +605,79 @@ export default function AdminPage() {
     } catch (err) {
       console.error(err);
       alert('Failed to delete project.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleAddProjectPreset = async () => {
+    if (!confirm('Load the 6 official Crispo engineering presets into the repository?')) return;
+    setIsSaving(true);
+    try {
+      const presets: Partial<Demo>[] = [
+        {
+          title: 'E-Comm 3D Visualizer',
+          category: 'Retail Technology',
+          image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop',
+          number: '01',
+          description: 'Next-gen 3D product rendering for high-conversion e-commerce.',
+          projectUrl: '#',
+          order: 1
+        },
+        {
+          title: 'SaaS Analytics Dashboard',
+          category: 'Fintech / Data',
+          image: 'https://images.unsplash.com/photo-1584931423312-5d53d862446a?q=80&w=2070&auto=format&fit=crop',
+          number: '02',
+          description: 'Real-time financial data visualization with advanced filtering.',
+          projectUrl: '#',
+          order: 2
+        },
+        {
+          title: 'AI Assistant Interface',
+          category: 'Generative AI',
+          image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=2070&auto=format&fit=crop',
+          number: '03',
+          description: 'Human-centric AI chat interface with seamless LLM integration.',
+          projectUrl: '#',
+          order: 3
+        },
+        {
+          title: 'Web Re-designing',
+          category: 'Web Development',
+          image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2070&auto=format&fit=crop',
+          number: '04',
+          description: 'Modernizing digital identity with high-performance web solutions.',
+          projectUrl: '#',
+          order: 4
+        },
+        {
+          title: 'App Development',
+          category: 'Mobile Apps',
+          image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=2070&auto=format&fit=crop',
+          number: '05',
+          description: 'Cross-platform mobile applications built for speed and scale.',
+          projectUrl: '#',
+          order: 5
+        },
+        {
+          title: 'UI/UX Design',
+          category: 'Product Design',
+          image: 'https://images.unsplash.com/photo-1690228254548-31ef53e40cd1?q=80&w=2070&auto=format&fit=crop',
+          number: '06',
+          description: 'Intuitive user journeys crafted through data-driven design.',
+          projectUrl: '#',
+          order: 6
+        }
+      ];
+
+      for (const preset of presets) {
+        await addDoc(collection(db, 'demos'), preset);
+      }
+      alert('Neural repository seeded with official presets.');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to seed repository.');
     } finally {
       setIsSaving(false);
     }
@@ -638,6 +770,16 @@ export default function AdminPage() {
             <p className="text-zinc-400 font-bold tracking-widest text-[10px] uppercase mt-2">Active Engineer: {user.email}</p>
           </div>
           <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 bg-zinc-900 px-4 py-2 rounded-xl border border-zinc-800">
+              <div className={`w-2 h-2 rounded-full ${
+                syncStatus === 'saving' ? 'bg-amber-500 animate-pulse' :
+                syncStatus === 'error' ? 'bg-rose-500' : 'bg-emerald-500'
+              }`} />
+              <span className="text-[9px] font-black tracking-widest text-zinc-500 uppercase">
+                {syncStatus === 'saving' ? 'Syncing...' : 
+                 syncStatus === 'error' ? 'Connection Error' : 'Live Synced'}
+              </span>
+            </div>
             <div className="flex bg-zinc-900 p-2 rounded-2xl border border-zinc-800 shadow-sm">
               {(['demos', 'text-editor', 'settings', 'enquiries'] as const).map((tab) => (
                 <button
@@ -1256,29 +1398,107 @@ export default function AdminPage() {
                 <div className="flex items-center">
                   <Sparkles className="w-5 h-5 mr-3 text-cyan-400" /> SERVICE DETAILS CMS
                 </div>
-                <button 
-                  onClick={() => {
-                    const id = prompt('Enter Service ID (e.g., custom-service):');
-                    if (id && cms) {
-                      const newPage = {
-                        id,
-                        title: 'New Service',
-                        subtitle: 'Service Subtitle',
-                        fullDescription: 'Detailed description for the new service.',
-                        benefits: ['Benefit 1', 'Benefit 2'],
-                        images: ['https://images.unsplash.com/photo-1460925895917-afdab827c52f'],
-                        stats: [{ label: 'Performance', value: '100%' }]
+                <div className="flex gap-4">
+                  <button 
+                    onClick={() => {
+                      if (!confirm('Load the 3 official Crispo capability presets?')) return;
+                      if (!cms) return;
+                      const presets: any = {
+                        'web-app-demos': {
+                          id: 'web-app-demos',
+                          title: 'Web & App Demos',
+                          subtitle: 'High-Fidelity Interactive Experiences',
+                          fullDescription: 'Our Web & App Demos aren\'t just static screenshots or videos. They are fully functional, sandboxed versions of your product. We specialize in creating "Magic Moments" where users can input real data, trigger workflows, and see results instantly.',
+                          benefits: [
+                            'Zero-Risk Environments',
+                            'Real-Time Interaction',
+                            'Conversion Optimization',
+                            'Mobile-Responsive Sandboxes',
+                            'Instant Feedback Loops'
+                          ],
+                          images: [
+                            'https://images.unsplash.com/photo-1460925895917-afdab827c52f',
+                            'https://images.unsplash.com/photo-1550745165-9bc0b252726f'
+                          ],
+                          stats: [
+                            { label: 'Avg. Engagement', value: '+300%' },
+                            { label: 'Sales Velocity', value: '2x faster' }
+                          ]
+                        },
+                        'seo-aeo': {
+                          id: 'seo-aeo',
+                          title: 'SEO & AEO',
+                          subtitle: 'Answer Engine Optimization',
+                          fullDescription: 'Traditional SEO is dead. Modern search is about being the primary reference for AI models. We optimize your structured data, knowledge graph presence, and long-tail content.',
+                          benefits: [
+                            'AI Recommendation Optimization',
+                            'LLM Knowledge Graph Integration',
+                            'Structured Data Orchestration',
+                            'High-Intent Traffic Capture',
+                            'Semantic Search Dominance'
+                          ],
+                          images: [
+                            'https://images.unsplash.com/photo-1551288049-bbda48658a7d',
+                            'https://images.unsplash.com/photo-1451187580459-43490279c0fa'
+                          ],
+                          stats: [
+                            { label: 'AI Mentions', value: 'Top 3' },
+                            { label: 'Organic Growth', value: '450%' }
+                          ]
+                        },
+                        'ui-ux-design': {
+                          id: 'ui-ux-design',
+                          title: 'UI/UX Design',
+                          subtitle: 'Psychology-Driven Interaction',
+                          fullDescription: 'We design for the subconscious. By blending neuromarketing principles with cutting-edge visual aesthetics, we create interfaces that guide users effortlessly toward conversion.',
+                          benefits: [
+                            'Neuro-Design Principles',
+                            'Micro-Interaction Mastery',
+                            'Aesthetic-Usability Effect',
+                            'Rapid Prototyping',
+                            'Multi-Platform Consistency'
+                          ],
+                          images: [
+                            'https://images.unsplash.com/photo-1690228254548-31ef53e40cd1',
+                            'https://images.unsplash.com/photo-1531297484001-80022131f5a1'
+                          ],
+                          stats: [
+                            { label: 'Design Fidelity', value: '100%' },
+                            { label: 'User Satisfaction', value: '98%' }
+                          ]
+                        }
                       };
-                      setCms({
-                        ...cms,
-                        servicePages: { ...cms.servicePages, [id]: newPage }
-                      });
-                    }
-                  }}
-                  className="bg-zinc-900 border border-zinc-800 text-white px-4 py-2 rounded-xl text-[10px] font-black tracking-widest hover:bg-zinc-800 transition-colors"
-                >
-                  + ADD PRESET
-                </button>
+                      setCms({ ...cms, servicePages: { ...cms.servicePages, ...presets } });
+                      alert('Service protocols synchronized. Live preview updating...');
+                    }}
+                    className="bg-zinc-800 border border-zinc-700 text-zinc-400 px-4 py-2 rounded-xl text-[10px] font-black tracking-widest hover:bg-zinc-700 transition-colors uppercase"
+                  >
+                    LOAD DEFAULTS
+                  </button>
+                  <button 
+                    onClick={() => {
+                      const id = prompt('Enter Service ID (e.g., custom-service):');
+                      if (id && cms) {
+                        const newPage = {
+                          id,
+                          title: 'New Service',
+                          subtitle: 'Service Subtitle',
+                          fullDescription: 'Detailed description for the new service.',
+                          benefits: ['Benefit 1', 'Benefit 2'],
+                          images: ['https://images.unsplash.com/photo-1460925895917-afdab827c52f'],
+                          stats: [{ label: 'Performance', value: '100%' }]
+                        };
+                        setCms({
+                          ...cms,
+                          servicePages: { ...cms.servicePages, [id]: newPage }
+                        });
+                      }
+                    }}
+                    className="bg-zinc-900 border border-zinc-800 text-white px-4 py-2 rounded-xl text-[10px] font-black tracking-widest hover:bg-zinc-800 transition-colors"
+                  >
+                    + ADD PRESET
+                  </button>
+                </div>
               </h3>
               <div className="space-y-12">
                 {cms.servicePages && Object.keys(cms.servicePages).map((serviceId) => (
@@ -1387,29 +1607,30 @@ export default function AdminPage() {
                 ))}
               </div>
             </div>
-
-            <button 
-              onClick={handleSaveCMS}
-              disabled={isSaving}
-              className="w-full bg-cyan-500 text-black py-6 rounded-3xl font-black tracking-[0.4em] flex items-center justify-center space-x-3 shadow-[0_0_50px_rgba(6,182,212,0.3)] hover:scale-[1.02] transition-transform uppercase disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSaving ? <Loader2 size={24} className="animate-spin" /> : <Save size={24} />}
-              <span>{isSaving ? 'SYNCHRONIZING...' : 'PUSH CONTENT REVISION'}</span>
-            </button>
           </div>
         )}
 
         {activeTab === 'demos' && (
-          <div className="space-y-8">
-            <div className="flex justify-between items-center">
+          <div className="space-y-12">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-zinc-900/50 p-6 rounded-[2rem] border border-zinc-800 gap-6">
               <h2 className="text-2xl font-black text-white">Project Catalog</h2>
-              <button 
-                onClick={() => { setCurrentDemo({}); setIsDemoModalOpen(true); }}
-                className="flex items-center space-x-2 bg-white text-zinc-900 px-6 py-3 rounded-xl font-black text-[10px] tracking-widest shadow-xl"
-              >
-                <Plus size={16} />
-                <span>NEW PROJECT</span>
-              </button>
+              <div className="flex flex-wrap gap-4">
+                <button 
+                  onClick={handleAddProjectPreset}
+                  disabled={isSaving}
+                  className="flex items-center space-x-2 bg-zinc-800 text-zinc-400 px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-zinc-700 transition-colors uppercase"
+                >
+                  <Star size={14} className="text-emerald-500" />
+                  <span>LOAD OFFICIAL PRESETS</span>
+                </button>
+                <button 
+                  onClick={() => { setCurrentDemo({}); setIsDemoModalOpen(true); }}
+                  className="flex items-center space-x-2 bg-white text-zinc-900 px-6 py-3 rounded-xl font-black text-[10px] tracking-widest shadow-xl uppercase group hover:scale-105 transition-transform"
+                >
+                  <Plus size={16} className="group-hover:rotate-90 transition-transform" />
+                  <span>NEW PROJECT</span>
+                </button>
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {demos.map((demo) => (
@@ -1523,16 +1744,25 @@ export default function AdminPage() {
                     </div>
                   ))}
                 </div>
+                <button 
+                  onClick={() => {
+                    if (confirm('Load official Crispo social connectivity protocols?')) {
+                      setSettings({
+                        ...settings,
+                        socialMedia: {
+                          linkedin: 'https://www.linkedin.com/in/lubab-aymen-p-5a5009360',
+                          instagram: 'https://www.instagram.com/Lubuuii',
+                          youtube: 'https://www.youtube.com/channel/UCAjKk0aZGhmVCKb84KTo_JA',
+                          github: '#'
+                        }
+                      });
+                    }
+                  }}
+                  className="mt-4 w-full bg-zinc-900 border border-zinc-800 text-zinc-500 py-3 rounded-xl text-[10px] font-black tracking-[0.3em] uppercase hover:bg-zinc-800 transition-colors"
+                >
+                  LOAD OFFICIAL SOCIALS
+                </button>
               </div>
-
-              <button 
-                onClick={handleSaveSettings}
-                disabled={isSaving}
-                className="w-full bg-white text-zinc-900 py-6 rounded-2xl font-black tracking-[0.3em] flex items-center justify-center space-x-3 shadow-2xl hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSaving ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
-                <span>{isSaving ? 'SYNCING...' : 'SYNC SETTINGS'}</span>
-              </button>
             </div>
           </div>
         )}

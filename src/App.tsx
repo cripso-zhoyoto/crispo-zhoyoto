@@ -52,6 +52,38 @@ export default function App() {
   React.useEffect(() => {
     document.title = "Crispo Digital | Next-Gen Agency";
 
+    // --- SECURITY PROTOCOLS ---
+    // Prevent common inspection vectors to minimize code leakage risk
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Prevent F12 (Inspect)
+      if (e.key === 'F12') {
+        e.preventDefault();
+      }
+      // Prevent Ctrl+Shift+I (Inspect)
+      if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+        e.preventDefault();
+      }
+      // Prevent Ctrl+Shift+J (Console)
+      if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+        e.preventDefault();
+      }
+      // Prevent Ctrl+U (View Source)
+      if (e.ctrlKey && e.key === 'u') {
+        e.preventDefault();
+      }
+      // Prevent Ctrl+S (Save Page)
+      if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener('contextmenu', handleContextMenu);
+    window.addEventListener('keydown', handleKeyDown);
+
     // Handle Dynamic Favicon
     if (cms?.footer?.faviconUrl) {
       const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
@@ -78,24 +110,26 @@ export default function App() {
     });
 
     return () => {
+      window.removeEventListener('contextmenu', handleContextMenu);
+      window.removeEventListener('keydown', handleKeyDown);
       unsubSettings();
       unsubCMS();
     };
   }, []);
 
   const socialLinks = cms?.footer?.socialLinks || settings?.socialMedia || {
-    linkedin: '#',
-    instagram: 'https://www.instagram.com/Lubuuii',
-    youtube: '#',
-    github: '#'
-  };
+  linkedin: 'https://www.linkedin.com/in/lubab-aymen-p-5a5009360',
+  instagram: 'https://www.instagram.com/Lubuuii',
+  youtube: 'https://www.youtube.com/channel/UCAjKk0aZGhmVCKb84KTo_JA',
+  github: '#'
+};
 
   return (
     <CMSContext.Provider value={cms}>
       <Router>
         <CustomCursor />
         <AnimatePresence mode="wait">
-          {showSplash && cms?.splash?.enabled ? (
+          {showSplash ? (
             <SplashScreen 
               key="splash" 
               cms={cms?.splash} 

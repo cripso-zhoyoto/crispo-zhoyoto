@@ -64,6 +64,15 @@ export default function Contact({ cms }: { cms?: any }) {
     }
   };
 
+  const handleServiceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      service: val,
+      otherService: val === 'Other' ? prev.otherService : ''
+    }));
+  };
+
   const servicesList = [
     'Web/App Demo Showcase',
     'SEO & AEO Services',
@@ -259,7 +268,7 @@ export default function Contact({ cms }: { cms?: any }) {
                   <div className="relative">
                     <select 
                       value={formData.service}
-                      onChange={(e) => setFormData({...formData, service: e.target.value})}
+                      onChange={handleServiceChange}
                       className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl py-5 px-6 text-zinc-900 dark:text-zinc-100 font-black focus:outline-none focus:ring-4 focus:ring-cyan-500/5 focus:bg-white dark:focus:bg-zinc-800 focus:border-cyan-200 dark:focus:border-cyan-900 transition-all appearance-none shadow-inner"
                     >
                       {servicesList.map(s => <option key={s} value={s}>{s}</option>)}
@@ -279,16 +288,15 @@ export default function Contact({ cms }: { cms?: any }) {
                     exit={{ opacity: 0, height: 0, marginTop: 0 }}
                     className="space-y-3 overflow-hidden"
                   >
-                    <label className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 font-black ml-2">Custom Service Protocol</label>
+                    <label className="text-[10px] uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400 font-black ml-2 animate-pulse">Specify Custom Service Requirements</label>
                     <div className="relative">
-                      <HelpCircle className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-300" />
-                      <input 
-                        type="text" 
+                      <HelpCircle className="absolute left-5 top-5 w-5 h-5 text-cyan-500" />
+                      <textarea 
                         required
                         value={formData.otherService}
                         onChange={(e) => setFormData({...formData, otherService: e.target.value})}
-                        className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl py-5 pl-14 pr-6 text-zinc-900 dark:text-zinc-100 font-black focus:outline-none focus:ring-4 focus:ring-cyan-500/5 focus:bg-white dark:focus:bg-zinc-800 focus:border-cyan-200 dark:focus:border-cyan-900 transition-all shadow-inner"
-                        placeholder="What service do you require?"
+                        className="w-full bg-cyan-50/50 dark:bg-cyan-900/10 border border-cyan-100 dark:border-cyan-900/30 rounded-2xl py-5 pl-14 pr-6 text-zinc-900 dark:text-zinc-100 font-black focus:outline-none focus:ring-4 focus:ring-cyan-500/10 focus:bg-white dark:focus:bg-zinc-800 focus:border-cyan-400 transition-all shadow-inner min-h-[100px] resize-none"
+                        placeholder="Please detail your specific requirements for this custom engagement..."
                       />
                     </div>
                   </motion.div>

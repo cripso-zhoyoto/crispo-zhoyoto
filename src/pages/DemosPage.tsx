@@ -220,6 +220,7 @@ export default function DemosPage() {
                   src={optimizeImageUrl(demo.image)} 
                   alt={demo.title}
                   loading="lazy"
+                  draggable="false"
                   className="w-full h-full object-cover group-hover:scale-105 transition-all duration-1000"
                 />
                 <a 
@@ -266,13 +267,25 @@ export default function DemosPage() {
                     </a>
                   )}
                   {demo.previewUrl && (
-                    <Link 
-                      to={demo.previewUrl} 
-                      className="flex items-center space-x-3 text-zinc-900 dark:text-zinc-100 font-black tracking-widest text-xs uppercase hover:text-purple-600 transition-colors"
-                    >
-                      <span>Preview</span>
-                      <ExternalLink className="w-4 h-4" />
-                    </Link>
+                    demo.previewUrl.startsWith('http') ? (
+                      <a 
+                        href={demo.previewUrl} 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center space-x-3 text-zinc-900 dark:text-zinc-100 font-black tracking-widest text-xs uppercase hover:text-purple-600 transition-colors"
+                      >
+                        <span>Preview</span>
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    ) : (
+                      <Link 
+                        to={demo.previewUrl} 
+                        className="flex items-center space-x-3 text-zinc-900 dark:text-zinc-100 font-black tracking-widest text-xs uppercase hover:text-purple-600 transition-colors"
+                      >
+                        <span>Preview</span>
+                        <ExternalLink className="w-4 h-4" />
+                      </Link>
+                    )
                   )}
                   {demo.videoUrl && (
                     <a 

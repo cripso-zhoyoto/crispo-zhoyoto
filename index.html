@@ -3,7 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <title>Crispo Digital | Next-Gen Agency</title>
+    <script>
+      // --- CORE SECURITY SHIELD ---
+      // This runs before React hydration to provide immediate protection
+      (function() {
+        const block = (e) => {
+          e.preventDefault();
+          return false;
+        };
+        document.addEventListener('contextmenu', block);
+        document.addEventListener('keydown', (e) => {
+          if (
+            e.key === 'F12' || 
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+            (e.ctrlKey && (e.key === 'u' || e.key === 's'))
+          ) {
+            return block(e);
+          }
+        });
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22black%22/><text x=%2250%%22 y=%2250%%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2260%22 fill=%22%2306b6d4%22 font-family=%22sans-serif%22 font-weight=%22bold%22>C</text></svg>">
     <link rel="preload" as="image" href="/crispo-bg/images/background.jpg" />
     <link rel="preload" as="image" href="/crispo-bg/images/sphere.png" />
