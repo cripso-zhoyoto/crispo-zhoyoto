@@ -1,0 +1,6 @@
+{
+  "name": "Crispo",
+  "description": "A high-performance digital agency platform with a fully functional CMS, interactive demos, and AI-powered growth strategies.",
+  "requestFramePermissions": ["gyroscope", "accelerometer"],
+  "majorCapabilities": []
+}

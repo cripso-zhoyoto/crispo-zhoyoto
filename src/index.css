@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Space+Grotesk:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --color-cream: #faf9f6;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply transition-colors duration-500;
+  }
+
+  .dark body {
+    @apply bg-zinc-950 text-white;
+  }
+
+  body:not(.dark) {
+    @apply bg-cream text-zinc-900;
+  }
+}
+
+/* Social Media Icons (Uiverse.io inspired) */
+.social-icons-wrapper {
+  @apply flex justify-center items-center py-4 list-none;
+}
+
+.social-icons-wrapper .icon-content {
+  @apply mx-3 relative;
+}
+
+.social-icons-wrapper .icon-content .tooltip {
+  @apply absolute -top-[30px] left-1/2 -translate-x-1/2 text-white px-2.5 py-1.5 rounded-md opacity-0 invisible text-sm transition-all duration-300 z-20 whitespace-nowrap;
+}
+
+.social-icons-wrapper .icon-content:hover .tooltip {
+  @apply opacity-100 visible -top-[50px];
+}
+
+.social-icons-wrapper .icon-content a {
+  @apply relative overflow-hidden flex justify-center items-center w-12 h-12 rounded-full text-zinc-600 bg-white dark:bg-zinc-800 dark:text-zinc-400 border border-zinc-100 dark:border-zinc-700 transition-all duration-300;
+}
+
+.social-icons-wrapper .icon-content a:hover {
+  @apply shadow-xl text-white border-transparent;
+}
+
+.social-icons-wrapper .icon-content a svg {
+  @apply relative z-10 w-6 h-6;
+}
+
+.social-icons-wrapper .icon-content a .filled {
+  @apply absolute top-auto bottom-0 left-0 w-full h-0 transition-all duration-300;
+}
+
+.social-icons-wrapper .icon-content a:hover .filled {
+  @apply h-full;
+}
+
+.social-icons-wrapper .icon-content a[data-social="linkedin"] .filled,
+.social-icons-wrapper .icon-content a[data-social="linkedin"] ~ .tooltip {
+  background-color: #0274b3;
+}
+
+.social-icons-wrapper .icon-content a[data-social="github"] .filled,
+.social-icons-wrapper .icon-content a[data-social="github"] ~ .tooltip {
+  background-color: #24262a;
+}
+
+.social-icons-wrapper .icon-content a[data-social="instagram"] .filled,
+.social-icons-wrapper .icon-content a[data-social="instagram"] ~ .tooltip {
+  background: linear-gradient(45deg, #405de6, #5b51db, #b33ab4, #c135b4, #e1306c, #fd1f1f);
+}
+
+.social-icons-wrapper .icon-content a[data-social="youtube"] .filled,
+.social-icons-wrapper .icon-content a[data-social="youtube"] ~ .tooltip {
+  background-color: #ff0000;
+}
+
+.social-icons-wrapper .icon-content a[data-social="twitter"] .filled,
+.social-icons-wrapper .icon-content a[data-social="twitter"] ~ .tooltip {
+  background-color: #1da1f2;
+}
+
+.social-icons-wrapper .icon-content a[data-social="facebook"] .filled,
+.social-icons-wrapper .icon-content a[data-social="facebook"] ~ .tooltip {
+  background-color: #1877f2;
+}
+

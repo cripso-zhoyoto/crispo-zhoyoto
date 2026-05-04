@@ -1,0 +1,88 @@
+{
+  "entities": {
+    "Demo": {
+      "title": "Demo",
+      "description": "A showcase project demo",
+      "type": "object",
+      "properties": {
+        "number": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "image": { "type": "string" },
+        "description": { "type": "string" },
+        "projectUrl": { "type": "string" },
+        "caseStudyUrl": { "type": "string" },
+        "order": { "type": "number" }
+      },
+      "required": ["title", "category", "image"]
+    },
+    "GlobalSettings": {
+      "title": "Global Settings",
+      "description": "App-wide settings like contact info and social links",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "location": { "type": "string" },
+        "socialMedia": {
+          "type": "object",
+          "properties": {
+            "twitter": { "type": "string" },
+            "linkedin": { "type": "string" },
+            "instagram": { "type": "string" },
+            "facebook": { "type": "string" },
+            "youtube": { "type": "string" },
+            "dribbble": { "type": "string" }
+          }
+        }
+      }
+    },
+    "Enquiry": {
+      "title": "Enquiry",
+      "description": "A contact form submission",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "service": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "message"]
+    },
+    "AIBlueprint": {
+      "title": "AI Blueprint",
+      "description": "A generated AI project blueprint",
+      "type": "object",
+      "properties": {
+        "idea": { "type": "string" },
+        "coreFeatures": { "type": "array", "items": { "type": "string" } },
+        "targetAudience": { "type": "string" },
+        "techStack": { "type": "array", "items": { "type": "string" } },
+        "seoStrategy": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["idea", "coreFeatures", "techStack"]
+    }
+  },
+  "firestore": {
+    "demos": {
+      "schema": "Demo",
+      "description": "Publicly viewable demos"
+    },
+    "enquiries": {
+      "schema": "Enquiry",
+      "description": "Private contact submissions"
+    },
+    "blueprints": {
+      "schema": "AIBlueprint",
+      "description": "Generated AI Lab results"
+    },
+    "settings": {
+      "schema": "GlobalSettings",
+      "description": "Global application configuration"
+    }
+  }
+}
