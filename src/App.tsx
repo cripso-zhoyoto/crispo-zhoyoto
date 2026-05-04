@@ -200,6 +200,7 @@ export default function App() {
                   <div className="mt-12 flex justify-center space-x-12 opacity-50">
                     <Link to="/policy" className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white text-[10px] font-black tracking-[0.2em] uppercase">{cms?.footer?.policyText || 'Policy'}</Link>
                     <Link to="/faq" className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white text-[10px] font-black tracking-[0.2em] uppercase">{cms?.footer?.faqText || 'Neural Sync (FAQ)'}</Link>
+                    <Link to="/admin" className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white text-[10px] font-black tracking-[0.2em] uppercase">Admin</Link>
                   </div>
                 </div>
               </footer>

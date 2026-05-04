@@ -245,14 +245,12 @@ export default function Demos({ cms }: DemosProps) {
                   </p>
                   <div className="pt-6 flex flex-wrap items-center gap-6 justify-center lg:justify-start">
                     {demo.projectUrl && (
-                      <a 
-                        href={demo.projectUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <Link 
+                        to="/demos"
                         className="w-full sm:w-auto px-12 py-5 rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:bg-black dark:hover:bg-zinc-100 transition-all text-sm font-black tracking-[0.2em] shadow-2xl shadow-zinc-900/20 text-center uppercase"
                       >
                        {cms?.viewProjectBtnText || 'VIEW PROJECT'}
-                      </a>
+                      </Link>
                     )}
 
                     {demo.previewUrl && (
