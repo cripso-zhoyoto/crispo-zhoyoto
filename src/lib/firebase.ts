@@ -4,6 +4,11 @@ import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import firebaseConfig from '../../firebase-applet-config.json';
 
+// Safety check for Firebase Configuration
+if (!firebaseConfig || !firebaseConfig.apiKey) {
+  console.error("CRITICAL: Firebase configuration is missing or invalid. Check firebase-applet-config.json");
+}
+
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
