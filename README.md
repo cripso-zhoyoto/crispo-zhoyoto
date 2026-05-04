@@ -2,7 +2,7 @@
 <img width="1200" height="475" alt="GHBanner" src="https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778" />
 </div>
 
-# Run and deploy your AI Studio app
+# Run and deploy your App
 
 This contains everything you need to run your app locally.
 
