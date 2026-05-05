@@ -36,9 +36,22 @@ service cloud.firestore {
              data.image is string;
     }
 
+    function isValidAIBlueprint(data) {
+      return data.idea is string && data.idea.size() > 0 && data.idea.size() <= 500 &&
+             data.coreFeatures is list && data.techStack is list &&
+             data.createdAt == request.time;
+    }
+
     // 0. Default Deny
     match /{document=**} {
       allow read, write: if false;
+    }
+
+    // 5. AI Blueprints
+    match /blueprints/{blueprintId} {
+      allow read: if true;
+      allow create: if isValidAIBlueprint(incoming());
+      allow delete: if isAdmin();
     }
 
     // 1. Settings / CMS

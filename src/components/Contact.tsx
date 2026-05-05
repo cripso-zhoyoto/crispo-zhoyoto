@@ -371,11 +371,22 @@ export default function Contact({ cms }: { cms?: any }) {
                   className="absolute inset-0 bg-white/90 dark:bg-zinc-900/90 rounded-[3.5rem] flex flex-col items-center justify-center p-12 text-center z-20"
                 >
                   <motion.div
-                    initial={{ scale: 0.5 }}
-                    animate={{ scale: 1 }}
-                    className="w-24 h-24 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-500 flex items-center justify-center mb-6 shadow-inner"
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ 
+                      scale: [0.5, 1.1, 1],
+                      opacity: 1 
+                    }}
+                    transition={{ duration: 0.4 }}
+                    className="w-24 h-24 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-500 flex items-center justify-center mb-6 shadow-inner relative"
                   >
-                    <CheckCircle2 className="w-12 h-12" />
+                    <CheckCircle2 className="w-12 h-12 relative z-10" />
+                    {/* Ghost scale-up and fade-out effect */}
+                    <motion.div 
+                      initial={{ scale: 1, opacity: 0.8 }}
+                      animate={{ scale: 2.5, opacity: 0 }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                      className="absolute inset-0 rounded-full bg-emerald-400/30"
+                    />
                   </motion.div>
                   <h3 className="text-4xl font-black text-zinc-900 dark:text-white mb-4 tracking-tight">Transmission Received</h3>
                   <p className="text-zinc-500 dark:text-zinc-400 text-xl font-medium leading-relaxed">We've received your mission parameters. Our specialized team will decrypt and respond within 24 standard solar hours.</p>

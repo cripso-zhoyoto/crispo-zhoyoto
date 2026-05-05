@@ -1,19 +1,119 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { GoogleGenAI, Type } from "@google/genai";
-import { Sparkles, Loader2, Lightbulb, Target, Settings, TrendingUp, History, ClipboardCheck } from 'lucide-react';
+import { Sparkles, Loader2, Lightbulb, Target, Settings, TrendingUp, History, ClipboardCheck, Trash2, Eye, ChevronDown, ChevronUp, AlertCircle, HelpCircle, FileText, Copy, LayoutGrid, Globe, Smartphone, ShoppingBag, Cpu } from 'lucide-react';
 import { db } from '../lib/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
+import { auth } from '../lib/firebase';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId?: string | null;
+    email?: string | null;
+    emailVerified?: boolean | null;
+    isAnonymous?: boolean | null;
+  }
+}
+
+function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: auth.currentUser?.uid,
+      email: auth.currentUser?.email,
+      emailVerified: auth.currentUser?.emailVerified,
+      isAnonymous: auth.currentUser?.isAnonymous,
+    },
+    operationType,
+    path
+  }
+  console.error('Firestore Error: ', JSON.stringify(errInfo));
+  throw new Error(JSON.stringify(errInfo));
+}
+
 export default function AILab({ cms }: { cms?: any }) {
   const [idea, setIdea] = useState('');
+  const [category, setCategory] = useState('saas');
   const [submittedIdea, setSubmittedIdea] = useState('');
   const [blueprint, setBlueprint] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [history, setHistory] = useState<any[]>([]);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+
+  const categories = [
+    { id: 'saas', label: 'SaaS', icon: LayoutGrid },
+    { id: 'webapp', label: 'Web App', icon: Globe },
+    { id: 'mobile', label: 'Mobile', icon: Smartphone },
+    { id: 'ecom', label: 'E-Comm', icon: ShoppingBag },
+    { id: 'ai', label: 'AI Agent', icon: Cpu }
+  ];
+
+  useEffect(() => {
+    const path = 'blueprints';
+    const q = query(collection(db, path), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setHistory(data);
+    }, (err) => {
+      handleFirestoreError(err, OperationType.GET, path);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleDeleteBlueprint = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const path = `blueprints/${id}`;
+    try {
+      await deleteDoc(doc(db, 'blueprints', id));
+    } catch (err) {
+      handleFirestoreError(err, OperationType.DELETE, path);
+    }
+  };
+
+  const selectBlueprint = (b: any) => {
+    setBlueprint(b);
+    setSubmittedIdea(b.idea);
+    setIsHistoryOpen(false);
+    window.scrollTo({ top: (document.getElementById('ai-lab')?.offsetTop || 0) - 100, behavior: 'smooth' });
+  };
+
+  const copyToClipboard = (item: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const content = `CRISPO TERMINAL MANIFESTO
+PROJECT TYPE: ${item.category?.toUpperCase() || 'GENERAL'}
+IDEA: ${item.idea}
+
+STRUCTURED ARCHITECTURE:
+- CORE PILLARS:
+${item.coreFeatures.map((f: string, i: number) => `  [${i + 1}] ${f}`).join('\n')}
+
+- TARGET AUDIENCE: ${item.targetAudience}
+
+- TECH STACK: ${item.techStack.join(', ')}
+
+- GROWTH & DISCOVERY (AEO/SEO):
+${item.seoStrategy}`;
+
+    navigator.clipboard.writeText(content).then(() => {
+      alert('Manifesto copied to sector neural link (clipboard)');
+    });
+  };
 
   const generateBlueprint = async () => {
     if (!idea.trim()) return;
@@ -26,26 +126,28 @@ export default function AILab({ cms }: { cms?: any }) {
     try {
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: `A potential client has submitted this rough project idea: "${idea}"
+        contents: `You are a world-class digital product strategist and technical architect. 
+        Generate a comprehensive, fully structured blueprint for a ${category} project based on the following idea: "${idea}"
+
+        Category Context: ${category}
         
-        Provide a concise technical blueprint. You MUST return JSON.
-        
-        Sections:
-        - coreFeatures (list of 3 strings)
-        - targetAudience (1 sentence)
-        - techStack (list of 3 strings)
-        - seoStrategy (1 actionable tip)`,
+        Requirements:
+        1. Be specific, not generic. 
+        2. Features must include monetization logic or core user flow steps.
+        3. Tech stack must be production-ready.
+        4. SEO strategy must mention how to rank in AI answer engines like Perplexity or Gemini.`,
         config: {
           responseMimeType: "application/json",
           responseSchema: {
             type: Type.OBJECT,
             properties: {
-              coreFeatures: { type: Type.ARRAY, items: { type: Type.STRING } },
-              targetAudience: { type: Type.STRING },
-              techStack: { type: Type.ARRAY, items: { type: Type.STRING } },
-              seoStrategy: { type: Type.STRING }
+              coreFeatures: { type: Type.ARRAY, items: { type: Type.STRING }, description: "5 specific, high-level features that make this a fully structured product" },
+              targetAudience: { type: Type.STRING, description: "A precise description of the ideal user persona for this category" },
+              techStack: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Modern, specific technical ecosystem" },
+              seoStrategy: { type: Type.STRING, description: "Detailed strategy for AEO and semantic visibility" },
+              category: { type: Type.STRING }
             },
-            required: ["coreFeatures", "targetAudience", "techStack", "seoStrategy"]
+            required: ["coreFeatures", "targetAudience", "techStack", "seoStrategy", "category"]
           }
         }
       });
@@ -55,14 +157,19 @@ export default function AILab({ cms }: { cms?: any }) {
       
       // Auto-save to Firebase
       setSaveStatus('saving');
-      await addDoc(collection(db, 'blueprints'), {
-        idea: idea,
-        ...result,
-        createdAt: serverTimestamp()
-      });
-      setSaveStatus('saved');
+      const path = 'blueprints';
+      try {
+        await addDoc(collection(db, path), {
+          idea: idea,
+          ...result,
+          createdAt: serverTimestamp()
+        });
+        setSaveStatus('saved');
+      } catch (err) {
+        handleFirestoreError(err, OperationType.CREATE, path);
+      }
       
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       setError('Failed to generate blueprint. Our servers are processing too much magic right now.');
     } finally {
@@ -143,6 +250,24 @@ export default function AILab({ cms }: { cms?: any }) {
                     To generate a perfect blueprint: Fully explain everything you need. Include details about your color palette, brand icon/vision, and specific technical requirements. High-resolution details yield high-fidelity roadmaps.
                   </p>
                 </div>
+              </div>
+
+              {/* Category Selector */}
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setCategory(cat.id)}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-3xl border-2 transition-all ${
+                      category === cat.id 
+                      ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-600' 
+                      : 'border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700'
+                    }`}
+                  >
+                    <cat.icon size={20} />
+                    <span className="text-[10px] font-black uppercase tracking-tighter">{cat.label}</span>
+                  </button>
+                ))}
               </div>
 
               <textarea
@@ -291,6 +416,123 @@ export default function AILab({ cms }: { cms?: any }) {
                 </motion.div>
               )}
             </AnimatePresence>
+          </div>
+        </div>
+
+        {/* History Section */}
+        <div className="mt-12">
+          <button 
+            onClick={() => setIsHistoryOpen(!isHistoryOpen)}
+            className="w-full py-4 px-8 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl flex items-center justify-between group transition-all hover:bg-zinc-200 dark:hover:bg-zinc-800"
+          >
+            <div className="flex items-center gap-3">
+              <History className="w-5 h-5 text-purple-600" />
+              <span className="text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-white">Blueprint Vault ({history.length})</span>
+            </div>
+            {isHistoryOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          </button>
+
+          <AnimatePresence>
+            {isHistoryOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {history.length === 0 ? (
+                    <div className="col-span-full py-12 text-center text-zinc-500 font-bold italic border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-3xl">
+                      The archive is currently empty. Initiate your first vision.
+                    </div>
+                  ) : (
+                    history.map((item) => (
+                      <motion.div
+                        layoutId={item.id}
+                        key={item.id}
+                        className="p-6 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-3xl hover:border-purple-300 dark:hover:border-purple-700 transition-colors cursor-pointer group"
+                        onClick={() => selectBlueprint(item)}
+                      >
+                        <div className="flex justify-between items-start mb-4">
+                          <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
+                            <FileText size={16} />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button 
+                              onClick={(e) => copyToClipboard(item, e)}
+                              className="p-2 text-zinc-300 hover:text-cyan-500 transition-colors opacity-0 group-hover:opacity-100"
+                              title="Copy Manifesto"
+                            >
+                              <Copy size={16} />
+                            </button>
+                            <button 
+                              onClick={(e) => handleDeleteBlueprint(item.id, e)}
+                              className="p-2 text-zinc-300 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100"
+                              title="Delete Permanent"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </div>
+                        <p className="text-sm font-black text-zinc-900 dark:text-white line-clamp-2 mb-2">"{item.idea}"</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">
+                            {item.createdAt?.toDate ? item.createdAt.toDate().toLocaleDateString() : 'Syncing...'}
+                          </span>
+                          <span className="flex items-center gap-1 text-cyan-600 text-[10px] font-black uppercase">
+                            <Eye size={12} /> View
+                          </span>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* AEO FAQ Section */}
+        <div className="mt-32">
+          <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-8">
+            <div className="text-center md:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-50 dark:bg-cyan-950/30 text-cyan-600 dark:text-cyan-400 text-[9px] font-black uppercase tracking-widest mb-4">
+                <AlertCircle size={12} /> Knowledge Base
+              </div>
+              <h3 className="text-4xl md:text-5xl font-black text-zinc-900 dark:text-white tracking-tight">AEO Framework <br/><span className="text-zinc-500">Decoded.</span></h3>
+            </div>
+            <p className="max-w-sm text-zinc-500 dark:text-zinc-400 font-medium text-sm text-center md:text-right leading-relaxed italic">
+              Answer Engine Optimization is the evolution of visibility. It's not just about being found; it's about being the definitive answer.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {[
+              {
+                q: "What is AEO and why should I care?",
+                a: "SEO is for keywords. AEO is for context. As users move to Gemini, Perplexity, and ChatGPT, your site must provide structured, canonical answers to bypass standard search and become the AI's primary source."
+              },
+              {
+                q: "How does AEO integration work?",
+                a: "We implement advanced Schema.org markup, semantic layering, and entity relationships within your code. This tells AI agents exactly what your service does, preventing hallucinations and ensuring accuracy."
+              },
+              {
+                q: "Is SEO becoming obsolete?",
+                a: "No, AEO built upon SEO. Traditional rankings drive traffic, but AEO drives 'authority status' in LLM latent space. We optimize for both to ensure a total surface area of digital dominance."
+              },
+              {
+                q: "Will Aeo improve my conversion?",
+                a: "Yes. When an AI search engine provides your business as the definitive solution to a user's prompt, the trust level is 10x higher than a standard blue link. It's pre-validated leads."
+              }
+            ].map((faq, idx) => (
+              <div key={idx} className="p-8 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] hover:bg-white dark:hover:bg-zinc-800 transition-all group">
+                <div className="w-10 h-10 rounded-2xl bg-zinc-900 dark:bg-white text-cyan-400 dark:text-cyan-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <HelpCircle size={20} />
+                </div>
+                <h5 className="text-lg font-black text-zinc-900 dark:text-white mb-4 leading-tight">{faq.q}</h5>
+                <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium leading-relaxed">{faq.a}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

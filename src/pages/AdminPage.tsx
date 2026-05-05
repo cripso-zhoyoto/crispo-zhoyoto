@@ -2073,6 +2073,29 @@ export default function AdminPage() {
                       </label>
                     </div>
                   </div>
+                  {currentDemo.videoUrl && (
+                    <div className="mt-4 rounded-3xl overflow-hidden border border-zinc-900 bg-black p-2 shadow-2xl">
+                      <video 
+                        key={currentDemo.videoUrl}
+                        src={currentDemo.videoUrl} 
+                        controls 
+                        className="w-full aspect-video rounded-2xl"
+                        playsInline
+                      />
+                      <div className="flex justify-between items-center px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                          <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.2em]">Live Asset Preview</span>
+                        </div>
+                        <button 
+                          onClick={() => setCurrentDemo({...currentDemo, videoUrl: ''})}
+                          className="text-[9px] font-black text-zinc-700 hover:text-rose-500 uppercase tracking-widest transition-colors"
+                        >
+                          Eject
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="space-y-2">
