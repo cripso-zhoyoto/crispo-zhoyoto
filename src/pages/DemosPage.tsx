@@ -18,60 +18,68 @@ interface Demo {
   previewUrl?: string;
 }
 
+const GITHUB_ASSETS_BASE = 'https://raw.githubusercontent.com/cripso-zhoyoto/image-hosting/main/crispo-main/';
+
 const STATIC_DEMOS: Demo[] = [
   {
     id: '1',
     title: 'E-Comm 3D Visualizer',
     category: 'Retail Technology',
-    image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop',
+    image: `${GITHUB_ASSETS_BASE}1.jpg`,
     number: '01',
     description: 'Next-gen 3D product rendering for high-conversion e-commerce.',
-    projectUrl: '#'
+    projectUrl: '#',
+    videoUrl: `${GITHUB_ASSETS_BASE}v1.mp4`
   },
   {
     id: '2',
     title: 'SaaS Analytics Dashboard',
     category: 'Fintech / Data',
-    image: 'https://images.unsplash.com/photo-1584931423312-5d53d862446a?q=80&w=2070&auto=format&fit=crop',
+    image: `${GITHUB_ASSETS_BASE}2.jpg`,
     number: '02',
     description: 'Real-time financial data visualization with advanced filtering.',
-    projectUrl: '#'
+    projectUrl: '#',
+    videoUrl: `${GITHUB_ASSETS_BASE}v2.mp4`
   },
   {
     id: '3',
     title: 'AI Assistant Interface',
     category: 'Generative AI',
-    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=2070&auto=format&fit=crop',
+    image: `${GITHUB_ASSETS_BASE}3.jpg`,
     number: '03',
     description: 'Human-centric AI chat interface with seamless LLM integration.',
-    projectUrl: '#'
+    projectUrl: '#',
+    videoUrl: `${GITHUB_ASSETS_BASE}v3.mp4`
   },
   {
     id: '4',
     title: 'Web Re-designing',
     category: 'Web Development',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2070&auto=format&fit=crop',
+    image: `${GITHUB_ASSETS_BASE}4.jpg`,
     number: '04',
     description: 'Modernizing digital identity with high-performance web solutions.',
-    projectUrl: '#'
+    projectUrl: '#',
+    videoUrl: `${GITHUB_ASSETS_BASE}v4.mp4`
   },
   {
     id: '5',
     title: 'App Development',
     category: 'Mobile Apps',
-    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=2070&auto=format&fit=crop',
+    image: `${GITHUB_ASSETS_BASE}5.jpg`,
     number: '05',
     description: 'Cross-platform mobile applications built for speed and scale.',
-    projectUrl: '#'
+    projectUrl: '#',
+    videoUrl: `${GITHUB_ASSETS_BASE}v5.mp4`
   },
   {
     id: '6',
     title: 'UI/UX Design',
     category: 'Product Design',
-    image: 'https://images.unsplash.com/photo-1690228254548-31ef53e40cd1?q=80&w=2070&auto=format&fit=crop',
+    image: `${GITHUB_ASSETS_BASE}6.jpg`,
     number: '06',
     description: 'Intuitive user journeys crafted through data-driven design.',
-    projectUrl: '#'
+    projectUrl: '#',
+    videoUrl: `${GITHUB_ASSETS_BASE}v6.mp4`
   }
 ];
 

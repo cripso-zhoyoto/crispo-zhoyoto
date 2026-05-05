@@ -17,36 +17,59 @@ const CrispoBackground: React.FC = () => {
 
     observer.observe(document.documentElement, { attributes: true });
 
-    if (sceneRef.current) {
-      parallaxInstance.current = new Parallax(sceneRef.current, {
-        relativeInput: false,
-        hoverOnly: false,
-        frictionX: 0.1,
-        frictionY: 0.1,
-        scalarX: 25,
-        scalarY: 15,
-        // Using Type assertions to handle properties not in types but supported by the lib
-        ...({
-          gyroscope: true,
-          gyroscopeMinAngleX: -45,
-          gyroscopeMaxAngleX: 45,
-          gyroscopeMinAngleY: -45,
-          gyroscopeMaxAngleY: 45,
-        } as any)
-      });
-    }
+    const initParallax = () => {
+      if (!sceneRef.current) return;
+      
+      try {
+        if (parallaxInstance.current) {
+          parallaxInstance.current.destroy();
+          parallaxInstance.current = null;
+        }
+      } catch (err) {
+        console.warn('Parallax destroy failed', err);
+        parallaxInstance.current = null;
+      }
+
+      try {
+        parallaxInstance.current = new Parallax(sceneRef.current, {
+          relativeInput: true,
+          hoverOnly: false,
+          frictionX: 0.1,
+          frictionY: 0.1,
+          scalarX: 25,
+          scalarY: 15,
+          ...({
+            gyroscope: true,
+            gyroscopeMinAngleX: -45,
+            gyroscopeMaxAngleX: 45,
+            gyroscopeMinAngleY: -45,
+            gyroscopeMaxAngleY: 45,
+            calibrateX: true,
+            calibrateY: true,
+          } as any)
+        });
+      } catch (err) {
+        console.error('Parallax init failed', err);
+      }
+    };
+
+    initParallax();
 
     const requestPermission = async () => {
+      console.log('Attempting to request orientation permission...');
       if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
         try {
           const response = await (DeviceOrientationEvent as any).requestPermission();
-          if (response === 'granted' && parallaxInstance.current) {
-            // Re-initialize or just rely on the event listener being active
-            console.log('Gyroscope permission granted');
+          console.log('Permission response:', response);
+          if (response === 'granted') {
+            initParallax();
           }
         } catch (e) {
           console.error('Gyroscope permission error:', e);
         }
+      } else {
+        // For browsers that don't need explicit permission (like most Android browsers)
+        console.log('Explicit permission not required for this browser');
       }
     };
 
@@ -90,7 +113,12 @@ const CrispoBackground: React.FC = () => {
       window.removeEventListener('touchstart', requestPermission);
       window.removeEventListener('mousedown', requestPermission);
       if (parallaxInstance.current) {
-        parallaxInstance.current.destroy();
+        try {
+          parallaxInstance.current.destroy();
+          parallaxInstance.current = null;
+        } catch (err) {
+          console.warn('Parallax final cleanup failed', err);
+        }
       }
     };
   }, []);

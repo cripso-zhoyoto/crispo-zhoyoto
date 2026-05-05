@@ -34,6 +34,7 @@ interface GlobalSettings {
   whatsapp: string;
   location: string;
   socialMedia: SocialLinks;
+  githubAssetsBase?: string;
 }
 
 interface CMSContent {
@@ -148,6 +149,9 @@ const fileToBase64 = (file: File): Promise<string> => {
     reader.readAsDataURL(file);
   });
 };
+
+// GitHub Assets Configuration
+const GITHUB_ASSETS_BASE = 'https://raw.githubusercontent.com/cripso-zhoyoto/image-hosting/main/crispo-main/';
 
 export default function AdminPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -628,55 +632,61 @@ export default function AdminPage() {
         {
           title: 'E-Comm 3D Visualizer',
           category: 'Retail Technology',
-          image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop',
+          image: `${GITHUB_ASSETS_BASE}1.jpg`,
           number: '01',
           description: 'Next-gen 3D product rendering for high-conversion e-commerce.',
           projectUrl: '#',
+          videoUrl: `${GITHUB_ASSETS_BASE}v1.mp4`,
           order: 1
         },
         {
           title: 'SaaS Analytics Dashboard',
           category: 'Fintech / Data',
-          image: 'https://images.unsplash.com/photo-1584931423312-5d53d862446a?q=80&w=2070&auto=format&fit=crop',
+          image: `${GITHUB_ASSETS_BASE}2.jpg`,
           number: '02',
           description: 'Real-time financial data visualization with advanced filtering.',
           projectUrl: '#',
+          videoUrl: `${GITHUB_ASSETS_BASE}v2.mp4`,
           order: 2
         },
         {
           title: 'AI Assistant Interface',
           category: 'Generative AI',
-          image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=2070&auto=format&fit=crop',
+          image: `${GITHUB_ASSETS_BASE}3.jpg`,
           number: '03',
           description: 'Human-centric AI chat interface with seamless LLM integration.',
           projectUrl: '#',
+          videoUrl: `${GITHUB_ASSETS_BASE}v3.mp4`,
           order: 3
         },
         {
           title: 'Web Re-designing',
           category: 'Web Development',
-          image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2070&auto=format&fit=crop',
+          image: `${GITHUB_ASSETS_BASE}4.jpg`,
           number: '04',
           description: 'Modernizing digital identity with high-performance web solutions.',
           projectUrl: '#',
+          videoUrl: `${GITHUB_ASSETS_BASE}v4.mp4`,
           order: 4
         },
         {
           title: 'App Development',
           category: 'Mobile Apps',
-          image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=2070&auto=format&fit=crop',
+          image: `${GITHUB_ASSETS_BASE}5.jpg`,
           number: '05',
           description: 'Cross-platform mobile applications built for speed and scale.',
           projectUrl: '#',
+          videoUrl: `${GITHUB_ASSETS_BASE}v5.mp4`,
           order: 5
         },
         {
           title: 'UI/UX Design',
           category: 'Product Design',
-          image: 'https://images.unsplash.com/photo-1690228254548-31ef53e40cd1?q=80&w=2070&auto=format&fit=crop',
+          image: `${GITHUB_ASSETS_BASE}6.jpg`,
           number: '06',
           description: 'Intuitive user journeys crafted through data-driven design.',
           projectUrl: '#',
+          videoUrl: `${GITHUB_ASSETS_BASE}v6.mp4`,
           order: 6
         }
       ];
@@ -1691,6 +1701,17 @@ export default function AdminPage() {
                     />
                     {errors.email && <div className="flex items-center text-rose-500 text-[10px] font-black uppercase mt-2 ml-2"><AlertCircle size={12} className="mr-1" /> {errors.email}</div>}
                   </div>
+                  <div className="space-y-2 py-4 border-y border-zinc-900">
+                    <label className="text-[10px] font-black text-cyan-400 uppercase tracking-widest ml-2 block mb-2">GitHub Assets Base URL</label>
+                    <input 
+                      type="text" 
+                      value={settings.githubAssetsBase || ''}
+                      onChange={(e) => setSettings({...settings, githubAssetsBase: e.target.value})}
+                      placeholder={GITHUB_ASSETS_BASE}
+                      className="w-full bg-black border border-zinc-800 rounded-2xl p-5 text-cyan-400 font-black focus:outline-none focus:border-cyan-900"
+                    />
+                    <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest mt-2 ml-2">Repo Folder: crispo-main</p>
+                  </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-2">Contact Signal (Phone)</label>
                     <input 
@@ -1949,13 +1970,26 @@ export default function AdminPage() {
                       )}
                     </label>
                   </div>
-                  <input 
-                    type="text" 
-                    value={currentDemo.image || ''}
-                    onChange={(e) => setCurrentDemo({...currentDemo, image: e.target.value})}
-                    className="w-full bg-black border border-zinc-800 rounded-2xl p-3 text-[10px] font-black text-zinc-500 mt-2"
-                    placeholder="Or paste URL here..."
-                  />
+                  <div className="flex gap-2 mt-2">
+                    <input 
+                      type="text" 
+                      value={currentDemo.image || ''}
+                      onChange={(e) => setCurrentDemo({...currentDemo, image: e.target.value})}
+                      className="flex-1 bg-black border border-zinc-800 rounded-2xl p-3 text-[10px] font-black text-zinc-500"
+                      placeholder="Or paste URL here..."
+                    />
+                    <button 
+                      onClick={() => {
+                        const filename = prompt('Enter filename from GitHub branch cripso-main (e.g., 1.jpg):');
+                        if (filename) {
+                          setCurrentDemo({...currentDemo, image: (settings?.githubAssetsBase || GITHUB_ASSETS_BASE) + filename});
+                        }
+                      }}
+                      className="bg-zinc-900 border border-zinc-800 text-[8px] font-black text-cyan-400 px-3 rounded-xl uppercase tracking-tighter"
+                    >
+                      LINK GITHUB
+                    </button>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-zinc-500 uppercase ml-2">Number Index</label>
@@ -2012,6 +2046,17 @@ export default function AdminPage() {
                       className="flex-1 bg-black border border-zinc-800 rounded-2xl p-5 font-black text-white"
                       placeholder="https://video..."
                     />
+                    <button 
+                      onClick={() => {
+                        const filename = prompt('Enter filename from GitHub branch cripso-main (e.g., v1.mp4):');
+                        if (filename) {
+                          setCurrentDemo({...currentDemo, videoUrl: (settings?.githubAssetsBase || GITHUB_ASSETS_BASE) + filename});
+                        }
+                      }}
+                      className="bg-zinc-900 border border-zinc-800 text-[8px] font-black text-rose-400 px-4 rounded-2xl uppercase"
+                    >
+                      GITHUB VIDEO
+                    </button>
                     <div className="relative">
                       <input 
                         type="file" 
