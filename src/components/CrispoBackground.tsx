@@ -19,14 +19,39 @@ const CrispoBackground: React.FC = () => {
 
     if (sceneRef.current) {
       parallaxInstance.current = new Parallax(sceneRef.current, {
-        relativeInput: true,
+        relativeInput: false,
         hoverOnly: false,
         frictionX: 0.1,
         frictionY: 0.1,
         scalarX: 25,
         scalarY: 15,
+        // Using Type assertions to handle properties not in types but supported by the lib
+        ...({
+          gyroscope: true,
+          gyroscopeMinAngleX: -45,
+          gyroscopeMaxAngleX: 45,
+          gyroscopeMinAngleY: -45,
+          gyroscopeMaxAngleY: 45,
+        } as any)
       });
     }
+
+    const requestPermission = async () => {
+      if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+        try {
+          const response = await (DeviceOrientationEvent as any).requestPermission();
+          if (response === 'granted' && parallaxInstance.current) {
+            // Re-initialize or just rely on the event listener being active
+            console.log('Gyroscope permission granted');
+          }
+        } catch (e) {
+          console.error('Gyroscope permission error:', e);
+        }
+      }
+    };
+
+    window.addEventListener('touchstart', requestPermission, { once: true });
+    window.addEventListener('mousedown', requestPermission, { once: true });
 
     const centerInit = () => {
       const parentHeight = window.innerHeight;
@@ -62,6 +87,8 @@ const CrispoBackground: React.FC = () => {
     return () => {
       observer.disconnect();
       window.removeEventListener('resize', centerInit);
+      window.removeEventListener('touchstart', requestPermission);
+      window.removeEventListener('mousedown', requestPermission);
       if (parallaxInstance.current) {
         parallaxInstance.current.destroy();
       }
