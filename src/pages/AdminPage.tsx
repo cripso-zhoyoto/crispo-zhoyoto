@@ -455,10 +455,20 @@ export default function AdminPage() {
 
   const handleLogin = async () => {
     const provider = new GoogleAuthProvider();
+    // Force select account to help with some browser issues
+    provider.setCustomParameters({ prompt: 'select_account' });
+    
     try {
       await signInWithPopup(auth, provider);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login failed', error);
+      if (error.code === 'auth/popup-closed-by-user') {
+        alert('Authentication cancelled. Please try again and complete the login in the popup window.');
+      } else if (error.code === 'auth/unauthorized-domain') {
+        alert('CRITICAL: Domain not authorized. Please add this domain (' + window.location.hostname + ') to your Firebase Console -> Auth -> Settings -> Authorized Domains.');
+      } else {
+        alert('Login failed: ' + error.message);
+      }
     }
   };
 

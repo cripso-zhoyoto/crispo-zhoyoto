@@ -96,7 +96,7 @@ const CrispoBackground: React.FC = () => {
           position: absolute;
         }
         .background {
-          background: url('/crispo-bg/images/background.jpg') no-repeat 50% 100%;
+          background: url('https://raw.githubusercontent.com/cripso-zhoyoto/image-hosting/main/images/background.jpg') no-repeat 50% 100%;
           bottom: -20px;
           background-size: cover;
           position: absolute;
@@ -152,7 +152,7 @@ const CrispoBackground: React.FC = () => {
           </li>
           <li className="layer" data-depth="0.25">
             <div className="sphere">
-              <img alt="sphere" src="/crispo-bg/images/sphere.png" />
+              <img alt="sphere" src="https://raw.githubusercontent.com/cripso-zhoyoto/image-hosting/main/images/sphere.png" />
             </div>
           </li>
           <li className="layer" data-depth="0.30">
@@ -200,22 +200,22 @@ const CrispoBackground: React.FC = () => {
             </div>
           </li>
           <li className="layer" data-depth="0.40">
-            <div className="depth-1 flake1"><img alt="flake" src="/crispo-bg/images/flakes/depth1/flakes1.png" /></div>
-            <div className="depth-1 flake2"><img alt="flake" src="/crispo-bg/images/flakes/depth1/flakes2.png" /></div>
+            <div className="depth-1 flake1"><img alt="flake" src="https://raw.githubusercontent.com/cripso-zhoyoto/image-hosting/main/images/flakes/depth1/flakes1.png" /></div>
+            <div className="depth-1 flake2"><img alt="flake" src="https://raw.githubusercontent.com/cripso-zhoyoto/image-hosting/main/images/flakes/depth1/flakes2.png" /></div>
           </li>
           <li className="layer" data-depth="0.50">
-            <div className="depth-2 flake1"><img alt="flake" src="/crispo-bg/images/flakes/depth2/flakes1.png" /></div>
+            <div className="depth-2 flake1"><img alt="flake" src="https://raw.githubusercontent.com/cripso-zhoyoto/image-hosting/main/images/flakes/depth2/flakes1.png" /></div>
           </li>
           <li className="layer" data-depth="0.60">
-            <div className="depth-3 flake1"><img alt="flake" src="/crispo-bg/images/flakes/depth3/flakes1.png" /></div>
-            <div className="depth-3 flake2"><img alt="flake" src="/crispo-bg/images/flakes/depth3/flakes2.png" /></div>
-            <div className="depth-3 flake3"><img alt="flake" src="/crispo-bg/images/flakes/depth3/flakes3.png" /></div>
+            <div className="depth-3 flake1"><img alt="flake" src="https://raw.githubusercontent.com/cripso-zhoyoto/image-hosting/main/images/flakes/depth3/flakes1.png" /></div>
+            <div className="depth-3 flake2"><img alt="flake" src="https://raw.githubusercontent.com/cripso-zhoyoto/image-hosting/main/images/flakes/depth3/flakes2.png" /></div>
+            <div className="depth-3 flake3"><img alt="flake" src="https://raw.githubusercontent.com/cripso-zhoyoto/image-hosting/main/images/flakes/depth3/flakes3.png" /></div>
           </li>
           <li className="layer" data-depth="0.80">
-            <div className="depth-4"><img alt="flake" src="/crispo-bg/images/flakes/depth4/flakes.png" /></div>
+            <div className="depth-4"><img alt="flake" src="https://raw.githubusercontent.com/cripso-zhoyoto/image-hosting/main/images/flakes/depth4/flakes.png" /></div>
           </li>
           <li className="layer" data-depth="1.00">
-            <div className="depth-5"><img alt="flake" src="/crispo-bg/images/flakes/depth5/flakes.png" /></div>
+            <div className="depth-5"><img alt="flake" src="https://raw.githubusercontent.com/cripso-zhoyoto/image-hosting/main/images/flakes/depth5/flakes.png" /></div>
           </li>
         </ul>
       </div>
