@@ -188,7 +188,12 @@ export default function AdminPage() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       // Security Check: Strict Admin Email Validation
-      if (u && u.email === 'hyiamare55@gmail.com') {
+      const ADMIN_EMAILS = [
+        'hyiamare55@gmail.com',
+        'lubabparmbil66@gmail.com',
+        'zhoyotokoff@gmail.com'
+      ];
+      if (u && u.email && ADMIN_EMAILS.includes(u.email)) {
         setUser(u);
       } else {
         if (u) {
