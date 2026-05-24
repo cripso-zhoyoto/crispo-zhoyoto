@@ -12,6 +12,7 @@ import Levicon from './components/Levicon';
 import SplashScreen from './components/SplashScreen';
 import WhatsAppBot from './components/WhatsAppBot';
 import CustomCursor from './components/CustomCursor';
+import ScrollProgress from './components/ScrollProgress';
 import SalesAlert from './components/SalesAlert';
 import DemosPage from './pages/DemosPage';
 import AdminPage from './pages/AdminPage';
@@ -128,6 +129,7 @@ export default function App() {
     <CMSContext.Provider value={cms}>
       <Router>
         <CustomCursor />
+        <ScrollProgress />
         <AnimatePresence mode="wait">
           {showSplash ? (
             <SplashScreen 
