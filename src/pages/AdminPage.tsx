@@ -2128,7 +2128,9 @@ export default function AdminPage() {
                         key={currentDemo.videoUrl}
                         src={currentDemo.videoUrl} 
                         controls 
-                        className="w-full aspect-video rounded-2xl"
+                        controlsList="nodownload"
+                        onContextMenu={(e) => e.preventDefault()}
+                        className="w-full aspect-video rounded-2xl select-none"
                         playsInline
                       />
                       <div className="flex justify-between items-center px-4 py-3">
@@ -2224,7 +2226,9 @@ export default function AdminPage() {
                               key={video.url}
                               src={video.url}
                               controls
-                              className="w-full aspect-video rounded-lg max-h-[120px] object-cover"
+                              controlsList="nodownload"
+                              onContextMenu={(e) => e.preventDefault()}
+                              className="w-full aspect-video rounded-lg max-h-[120px] object-cover select-none"
                               playsInline
                             />
                           </div>
