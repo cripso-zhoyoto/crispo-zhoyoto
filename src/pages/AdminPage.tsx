@@ -7,6 +7,11 @@ import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged, User } from 'f
 import { Plus, Trash2, Edit2, Save, X, Settings as SettingsIcon, LogOut, ExternalLink, Mail, Phone, MapPin, Instagram, Linkedin, Globe, MessageSquare, Youtube, Upload, Image as ImageIcon, Loader2, Menu, Github, Star, Sparkles, Send, Zap, AlertCircle } from 'lucide-react';
 import { ImageCropper } from '../components/ImageCropper';
 
+interface VideoAsset {
+  url: string;
+  title: string;
+}
+
 interface Demo {
   id: string;
   number: string;
@@ -17,6 +22,7 @@ interface Demo {
   projectUrl?: string;
   caseStudyUrl?: string;
   videoUrl?: string;
+  videoUrls?: VideoAsset[];
   previewUrl?: string;
   order?: number;
 }
@@ -521,6 +527,43 @@ export default function AdminPage() {
     }
   };
 
+  const handleMultiVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploadingVideo(true);
+    try {
+      const currentVideos = [...(currentDemo.videoUrls || [])];
+      
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.size > 50 * 1024 * 1024) { // 50MB limit
+          alert(`Video file "${file.name}" is too large. Max 50MB.`);
+          continue;
+        }
+
+        const storageRef = ref(storage, `demos/videos/${Date.now()}_${file.name}`);
+        const snapshot = await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(snapshot.ref);
+        
+        currentVideos.push({
+          url,
+          title: file.name.split('.')[0].replace(/[_-]/g, ' ') || 'New Video Clip'
+        });
+      }
+
+      setCurrentDemo({
+        ...currentDemo,
+        videoUrls: currentVideos
+      });
+    } catch (error) {
+      console.error('Multi video upload failed', error);
+      alert('Video upload failed.');
+    } finally {
+      setUploadingVideo(false);
+    }
+  };
+
   const handleCropComplete = (croppedImage: string) => {
     if (croppingType === 'demo') {
       setCurrentDemo({ ...currentDemo, image: croppedImage });
@@ -590,6 +633,7 @@ export default function AdminPage() {
         projectUrl: currentDemo.projectUrl || '',
         caseStudyUrl: currentDemo.caseStudyUrl || '',
         videoUrl: currentDemo.videoUrl || '',
+        videoUrls: currentDemo.videoUrls || [],
         previewUrl: currentDemo.previewUrl || '',
         order: currentDemo.order || demos.length + 1
       };
@@ -2103,6 +2147,149 @@ export default function AdminPage() {
                   )}
                 </div>
               </div>
+              
+              {/* MULTI-VIDEO ASSET ENGINE */}
+              <div className="space-y-4 p-6 rounded-[2.5rem] border border-zinc-800 bg-zinc-950/40">
+                <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                    <span className="text-[11px] font-black uppercase text-cyan-400 tracking-wider">Multi-Video Asset Library ({currentDemo.videoUrls?.length || 0})</span>
+                  </div>
+                  <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">Dynamic Website Playlist</span>
+                </div>
+
+                <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                  {(!currentDemo.videoUrls || currentDemo.videoUrls.length === 0) ? (
+                    <div className="text-center py-6 text-[10px] uppercase font-black tracking-widest text-[#3B000A] dark:text-zinc-600 italic">
+                      No auxiliary video files bound to this demo.
+                    </div>
+                  ) : (
+                    currentDemo.videoUrls.map((video, index) => (
+                      <div key={index} className="p-4 bg-black border border-zinc-900 rounded-3xl space-y-3 relative overflow-hidden group/item">
+                        <div className="flex items-center justify-between gap-4">
+                          <input 
+                            type="text" 
+                            value={video.title || ''}
+                            onChange={(e) => {
+                              const updated = [...(currentDemo.videoUrls || [])];
+                              updated[index] = { ...updated[index], title: e.target.value };
+                              setCurrentDemo({ ...currentDemo, videoUrls: updated });
+                            }}
+                            className="flex-1 bg-zinc-950 border border-zinc-900 focus:border-zinc-700 rounded-xl px-3 py-2 text-[11px] font-bold text-[#EAB308] focus:outline-none"
+                            placeholder="e.g. Navigation Walkthrough"
+                          />
+                          <button 
+                            onClick={() => {
+                              const updated = (currentDemo.videoUrls || []).filter((_, i) => i !== index);
+                              setCurrentDemo({ ...currentDemo, videoUrls: updated });
+                            }}
+                            className="p-1 px-[10px] py-1 bg-rose-950/20 text-rose-500 border border-rose-950 rounded-lg hover:bg-rose-500 hover:text-white transition-all text-[8px] font-black uppercase tracking-widest cursor-pointer"
+                            title="Delete asset"
+                          >
+                            Delete
+                          </button>
+                        </div>
+
+                        <div className="flex gap-2 items-center">
+                          <input 
+                            type="text" 
+                            value={video.url || ''}
+                            onChange={(e) => {
+                              const updated = [...(currentDemo.videoUrls || [])];
+                              updated[index] = { ...updated[index], url: e.target.value };
+                              setCurrentDemo({ ...currentDemo, videoUrls: updated });
+                            }}
+                            className="flex-1 bg-zinc-950 border border-zinc-900 focus:border-zinc-700 rounded-xl px-3 py-2 text-[10px] font-semibold text-zinc-300 focus:outline-none"
+                            placeholder="Asset URL https://"
+                          />
+                          <button
+                            onClick={() => {
+                              const currentFilename = video.url ? video.url.split('/').pop()?.split('?')[0] : '';
+                              const finalFilename = currentFilename && currentFilename.endsWith('.mp4') ? currentFilename : `v${index + 1}.mp4`;
+                              const newUrl = (settings?.githubAssetsBase || GITHUB_ASSETS_BASE) + finalFilename;
+                              const updated = [...(currentDemo.videoUrls || [])];
+                              updated[index] = { ...updated[index], url: newUrl };
+                              setCurrentDemo({ ...currentDemo, videoUrls: updated });
+                            }}
+                            className="p-1 px-[10px] py-2 bg-emerald-950/20 text-emerald-500 border border-emerald-950 rounded-lg hover:bg-emerald-500 hover:text-white transition-all text-[8px] font-black uppercase tracking-widest cursor-pointer whitespace-nowrap"
+                            title="Format as GitHub repo reference link"
+                          >
+                            GitHub Preset
+                          </button>
+                        </div>
+
+                        {video.url && (
+                          <div className="rounded-xl overflow-hidden bg-zinc-950 border border-zinc-900 p-1.5 shadow-inner">
+                            <video 
+                              key={video.url}
+                              src={video.url}
+                              controls
+                              className="w-full aspect-video rounded-lg max-h-[120px] object-cover"
+                              playsInline
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Adding video buttons row with inline selectors & multi-select */}
+                <div className="pt-2 border-t border-zinc-900 space-y-3">
+                  <div className="flex flex-col gap-2">
+                    <button 
+                      onClick={() => {
+                        const currentVideos = currentDemo.videoUrls || [];
+                        setCurrentDemo({
+                          ...currentDemo,
+                          videoUrls: [...currentVideos, { url: '', title: `Aux Video Feed ${currentVideos.length + 1}` }]
+                        });
+                      }}
+                      className="w-full bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-[9px] font-black text-white py-3 px-4 rounded-xl uppercase tracking-widest transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Plus size={10} className="text-cyan-400" />
+                      <span>[+] Add New Blank Video Row</span>
+                    </button>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <button 
+                        onClick={() => {
+                          const currentVideos = currentDemo.videoUrls || [];
+                          const filename = `v${currentVideos.length + 1}.mp4`;
+                          const url = (settings?.githubAssetsBase || GITHUB_ASSETS_BASE) + filename;
+                          setCurrentDemo({
+                            ...currentDemo,
+                            videoUrls: [...currentVideos, { url, title: `GitHub Walkthrough ${currentVideos.length + 1}` }]
+                          });
+                        }}
+                        className="bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-[9px] font-black text-emerald-400 py-3.5 px-4 rounded-xl uppercase tracking-widest transition-all text-center cursor-pointer"
+                        title="Link default video reference on GitHub"
+                      >
+                        [+] Append GitHub Asset
+                      </button>
+
+                      <div className="relative">
+                        <input 
+                          type="file" 
+                          accept="video/*"
+                          multiple
+                          onChange={handleMultiVideoUpload}
+                          className="hidden"
+                          id="multi-video-upload-btn-new"
+                        />
+                        <label 
+                          htmlFor="multi-video-upload-btn-new"
+                          className="flex items-center justify-center bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-[9px] font-black text-rose-400 py-3.5 px-4 rounded-xl uppercase tracking-widest transition-all cursor-pointer text-center w-full"
+                        >
+                          {uploadingVideo ? <Loader2 size={10} className="animate-spin mr-1.5" /> : null}
+                          [+] Upload Video File(s)
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-zinc-500 uppercase ml-2">Abstract Description</label>
                 <textarea 
