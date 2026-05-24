@@ -2,8 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { ExternalLink, ArrowLeft, Star } from 'lucide-react';
+import { ExternalLink, ArrowLeft, Star, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import VideoLightbox from '../components/VideoLightbox';
+
+interface VideoAsset {
+  url: string;
+  title: string;
+}
 
 interface Demo {
   id: string;
@@ -15,6 +21,7 @@ interface Demo {
   projectUrl?: string;
   caseStudyUrl?: string;
   videoUrl?: string;
+  videoUrls?: VideoAsset[];
   previewUrl?: string;
 }
 
@@ -88,6 +95,14 @@ export default function DemosPage() {
   const [filteredDemos, setFilteredDemos] = useState<Demo[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('All');
+  const [activeVideoDemo, setActiveVideoDemo] = useState<Demo | null>(null);
+  const [activeVideoUrl, setActiveVideoUrl] = useState<string>('');
+  const [expandedDemos, setExpandedDemos] = useState<Record<string, boolean>>({});
+
+  const toggleExpandDemo = (id: string, e?: React.MouseEvent) => {
+    e?.preventDefault();
+    setExpandedDemos(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
   const categories = ['All', ...new Set(demos.map(d => d.category))];
 
@@ -260,7 +275,24 @@ export default function DemosPage() {
                   {demo.title}
                 </h3>
                 <p className="text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed font-medium max-w-md">
-                  {demo.description || 'Custom engineered interactive experience designed for high-conversion stakeholder engagement.'}
+                  {(() => {
+                    const desc = demo.description || 'Custom engineered interactive experience designed for high-conversion stakeholder engagement.';
+                    const isExpanded = expandedDemos[demo.id];
+                    if (desc.length > 85) {
+                      return (
+                        <>
+                          {isExpanded ? desc : `${desc.slice(0, 85)}...`}
+                          <button
+                            onClick={(e) => toggleExpandDemo(demo.id, e)}
+                            className="ml-2 font-black text-xs uppercase tracking-wider text-rose-600 dark:text-cyan-400 hover:underline inline-block whitespace-nowrap cursor-pointer"
+                          >
+                            {isExpanded ? 'show less..' : 'explore more..'}
+                          </button>
+                        </>
+                      );
+                    }
+                    return desc;
+                  })()}
                 </p>
                 <div className="pt-6 flex flex-wrap items-center gap-6">
                   {demo.projectUrl && (
@@ -295,15 +327,20 @@ export default function DemosPage() {
                       </Link>
                     )
                   )}
-                  {demo.videoUrl && (
-                    <a 
-                      href={demo.videoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer" 
-                      className="flex items-center space-x-3 text-zinc-900 dark:text-zinc-100 font-black tracking-widest text-xs uppercase hover:text-rose-600 transition-colors"
+                  {(demo.videoUrl || (demo.videoUrls && demo.videoUrls.length > 0)) && (
+                    <button 
+                      onClick={() => {
+                        setActiveVideoDemo(demo);
+                        const initialUrl = demo.videoUrls && demo.videoUrls.length > 0 
+                          ? demo.videoUrls[0].url 
+                          : (demo.videoUrl || '');
+                        setActiveVideoUrl(initialUrl);
+                      }}
+                      className="flex items-center space-x-3 text-[#3B000A] dark:text-[#EAB308] hover:text-rose-600 dark:hover:text-cyan-400 font-black tracking-widest text-xs uppercase transition-colors"
                     >
-                      <span>Watch</span>
-                    </a>
+                      <Play className="w-3.5 h-3.5 fill-current" />
+                      <span>Watch ({demo.videoUrls && demo.videoUrls.length > 0 ? demo.videoUrls.length : 1})</span>
+                    </button>
                   )}
                   <div className="w-8 h-px bg-zinc-200 dark:bg-zinc-800" />
                   <a 
@@ -318,6 +355,16 @@ export default function DemosPage() {
           ))}
         </div>
       </div>
+
+      <VideoLightbox
+        demo={activeVideoDemo}
+        activeVideoUrl={activeVideoUrl}
+        setActiveVideoUrl={setActiveVideoUrl}
+        onClose={() => {
+          setActiveVideoDemo(null);
+          setActiveVideoUrl('');
+        }}
+      />
     </div>
   );
 }
