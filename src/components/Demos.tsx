@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { ExternalLink, Star, ArrowRight, Grid3X3 } from 'lucide-react';
+import { ExternalLink, Star, ArrowRight, Grid3X3, Play } from 'lucide-react';
 import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Link } from 'react-router-dom';
+import VideoLightbox from './VideoLightbox';
+
+interface VideoAsset {
+  url: string;
+  title: string;
+}
 
 interface Demo {
   id: string;
@@ -15,6 +21,7 @@ interface Demo {
   projectUrl?: string;
   caseStudyUrl?: string;
   videoUrl?: string;
+  videoUrls?: VideoAsset[];
   previewUrl?: string;
 }
 
@@ -88,6 +95,14 @@ const STATIC_DEMOS: Demo[] = [
 
 export default function Demos({ cms }: DemosProps) {
   const [demos, setDemos] = useState<Demo[]>([]);
+  const [activeVideoDemo, setActiveVideoDemo] = useState<Demo | null>(null);
+  const [activeVideoUrl, setActiveVideoUrl] = useState<string>('');
+  const [expandedDemos, setExpandedDemos] = useState<Record<string, boolean>>({});
+
+  const toggleExpandDemo = (id: string, e?: React.MouseEvent) => {
+    e?.preventDefault();
+    setExpandedDemos(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
   useEffect(() => {
     const fetchDemos = async () => {
@@ -241,7 +256,24 @@ export default function Demos({ cms }: DemosProps) {
                     {demo.title}
                   </h3>
                   <p className="text-[#3B000A] dark:text-[#3B000A] text-xl leading-relaxed max-w-md mx-auto lg:mx-0 font-medium opacity-80">
-                    {demo.description || 'Proprietary interactive system built to increase user engagement by up to 240% during pitch sessions.'}
+                    {(() => {
+                      const desc = demo.description || 'Proprietary interactive system built to increase user engagement by up to 240% during pitch sessions.';
+                      const isExpanded = expandedDemos[demo.id];
+                      if (desc.length > 85) {
+                        return (
+                          <>
+                            {isExpanded ? desc : `${desc.slice(0, 85)}...`}
+                            <button
+                              onClick={(e) => toggleExpandDemo(demo.id, e)}
+                              className="ml-2 font-black text-xs uppercase tracking-wider text-rose-600 dark:text-[#EAB308] hover:underline inline-block whitespace-nowrap cursor-pointer"
+                            >
+                              {isExpanded ? 'show less..' : 'explore more..'}
+                            </button>
+                          </>
+                        );
+                      }
+                      return desc;
+                    })()}
                   </p>
                   <div className="pt-6 flex flex-wrap items-center gap-6 justify-center lg:justify-start">
                     {demo.projectUrl && (
@@ -273,6 +305,22 @@ export default function Demos({ cms }: DemosProps) {
                       )
                     )}
 
+                    {(demo.videoUrl || (demo.videoUrls && demo.videoUrls.length > 0)) && (
+                      <button 
+                        onClick={() => {
+                          setActiveVideoDemo(demo);
+                          const initialUrl = demo.videoUrls && demo.videoUrls.length > 0 
+                            ? demo.videoUrls[0].url 
+                            : (demo.videoUrl || '');
+                          setActiveVideoUrl(initialUrl);
+                        }}
+                        className="w-full sm:w-auto px-10 py-5 rounded-2xl border-2 border-[#3B000A] dark:border-[#EAB308] text-[#3B000A] dark:text-[#EAB308] hover:bg-rose-50 dark:hover:bg-rose-900/15 transition-all text-sm font-black tracking-[0.2em] text-center uppercase flex items-center justify-center space-x-2"
+                      >
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                        <span>WATCH DEMO ({demo.videoUrls && demo.videoUrls.length > 0 ? demo.videoUrls.length : 1})</span>
+                      </button>
+                    )}
+
                     <a 
                       href={demo.caseStudyUrl || '#'}
                       className="w-full sm:w-auto px-10 py-5 rounded-2xl border-2 border-zinc-900 dark:border-zinc-100 text-zinc-900 dark:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all text-sm font-black tracking-[0.2em] text-center uppercase"
@@ -286,6 +334,16 @@ export default function Demos({ cms }: DemosProps) {
           </div>
         </div>
       </div>
+
+      <VideoLightbox
+        demo={activeVideoDemo}
+        activeVideoUrl={activeVideoUrl}
+        setActiveVideoUrl={setActiveVideoUrl}
+        onClose={() => {
+          setActiveVideoDemo(null);
+          setActiveVideoUrl('');
+        }}
+      />
     </section>
   );
 }
