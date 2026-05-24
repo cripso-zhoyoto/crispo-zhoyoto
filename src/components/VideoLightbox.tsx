@@ -65,9 +65,11 @@ export default function VideoLightbox({
                   key={activeVideoUrl}
                   src={activeVideoUrl}
                   controls
+                  controlsList="nodownload"
+                  onContextMenu={(e) => e.preventDefault()}
                   autoPlay
                   playsInline
-                  className="w-full h-full max-h-[55vh] lg:max-h-[60vh] object-contain rounded-xl"
+                  className="w-full h-full max-h-[55vh] lg:max-h-[60vh] object-contain rounded-xl select-none"
                 />
               ) : (
                 <div className="text-zinc-600 font-extrabold text-sm uppercase tracking-widest flex flex-col items-center gap-3">
