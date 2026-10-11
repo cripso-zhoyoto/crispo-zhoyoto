@@ -49,7 +49,7 @@ export default function PolicyPage() {
               <h2 className="text-3xl font-black text-zinc-900">Privacy Policy</h2>
             </div>
             <div className="p-10 bg-zinc-50 border border-zinc-100 rounded-[3rem] space-y-6 text-zinc-600 leading-relaxed font-medium">
-              <p>At Crispo Digital Agency, we respect your privacy. This policy outlines how we collect, use, and protect your information when you interact with our studio.</p>
+              <p>At GENCEEY Digital Agency, we respect your privacy. This policy outlines how we collect, use, and protect your information when you interact with our studio.</p>
               
               <h3 className="text-zinc-900 font-black uppercase text-xs tracking-widest pt-4">Data Collection</h3>
               <p>We collect information you transmit via our contact forms (Name, Email, Message). This data is stored securely in our private Firebase vault and is never sold to third-party entities.</p>
@@ -67,9 +67,9 @@ export default function PolicyPage() {
               <h2 className="text-3xl font-black text-zinc-900">Terms of Service</h2>
             </div>
             <div className="p-10 bg-zinc-50 border border-zinc-100 rounded-[3rem] space-y-6 text-zinc-600 leading-relaxed font-medium">
-              <p>By engaging with Crispo Digital Agency, you agree to our operational framework.</p>
+              <p>By engaging with GENCEEY Digital Agency, you agree to our operational framework.</p>
               <ul className="list-disc pl-6 space-y-4">
-                <li><span className="text-zinc-900 font-black uppercase text-[10px] tracking-widest">Intellectual Property:</span> All demonstration code remains the property of Crispo unless otherwise specified in formal contracts.</li>
+                <li><span className="text-zinc-900 font-black uppercase text-[10px] tracking-widest">Intellectual Property:</span> All demonstration code remains the property of GENCEEY unless otherwise specified in formal contracts.</li>
                 <li><span className="text-zinc-900 font-black uppercase text-[10px] tracking-widest">AI Lab:</span> Blueprints generated in our AI Lab are starting points; they are not financial or legal advice.</li>
                 <li><span className="text-zinc-900 font-black uppercase text-[10px] tracking-widest">Communication:</span> We use WhatsApp and Email as our primary transmission protocols.</li>
               </ul>
