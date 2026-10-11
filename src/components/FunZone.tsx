@@ -122,7 +122,7 @@ export default function FunZone({ cms }: { cms?: any }) {
                 <h3 className="text-4xl md:text-5xl font-black text-zinc-900 dark:text-white mb-4 tracking-tight">Reflexes of a Pro!</h3>
                 <p className="text-zinc-500 dark:text-zinc-400 text-xl mb-8 font-medium">Mention this code in our strategy call for 15% off:</p>
                 <div className="bg-zinc-50 dark:bg-zinc-800 border-2 border-dashed border-zinc-200 dark:border-zinc-700 px-10 py-6 rounded-3xl font-mono text-3xl text-zinc-900 dark:text-white font-black mb-10 shadow-inner">
-                  CRISPO_LEGACY_15
+                  GENCEEY_LEGACY_15
                 </div>
                 <button 
                   onClick={reset}
