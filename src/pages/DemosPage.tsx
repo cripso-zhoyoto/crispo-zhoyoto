@@ -118,25 +118,25 @@ export default function DemosPage() {
     window.scrollTo(0, 0);
 
     // SEO Optimization
-    document.title = "Engineering Showcase | Crispo Digital Agency Demos";
+    document.title = "Engineering Showcase | GENCEEY Digital Agency Demos";
     
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute("content", "Explore Crispo Digital Agency's full catalog of high-performance engineering demos. From AI-driven SaaS platforms to immersive Web3 experiences.");
+      metaDescription.setAttribute("content", "Explore GENCEEY Digital Agency's full catalog of high-performance engineering demos. From AI-driven SaaS platforms to immersive Web3 experiences.");
     } else {
       const meta = document.createElement('meta');
       meta.name = "description";
-      meta.content = "Explore Crispo Digital Agency's full catalog of high-performance engineering demos. From AI-driven SaaS platforms to immersive Web3 experiences.";
+      meta.content = "Explore GENCEEY Digital Agency's full catalog of high-performance engineering demos. From AI-driven SaaS platforms to immersive Web3 experiences.";
       document.head.appendChild(meta);
     }
 
     const metaKeywords = document.querySelector('meta[name="keywords"]');
     if (metaKeywords) {
-      metaKeywords.setAttribute("content", "engineering demos, UI/UX showcase, SaaS interface, Web3 development, React portfolio, Crispo agency");
+      metaKeywords.setAttribute("content", "engineering demos, UI/UX showcase, SaaS interface, Web3 development, React portfolio, GENCEEY agency");
     } else {
       const meta = document.createElement('meta');
       meta.name = "keywords";
-      meta.content = "engineering demos, UI/UX showcase, SaaS interface, Web3 development, React portfolio, Crispo agency";
+      meta.content = "engineering demos, UI/UX showcase, SaaS interface, Web3 development, React portfolio, GENCEEY agency";
       document.head.appendChild(meta);
     }
 
