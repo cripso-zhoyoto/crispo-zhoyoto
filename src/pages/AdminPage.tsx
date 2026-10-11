@@ -266,12 +266,12 @@ export default function AdminPage() {
             badge: "CAPABILITIES",
             title: "Next-Gen Solutions.",
             description: "We don't just build websites; we engineer experiences that dominate markets.",
-            suiteTitle: "The \"Crispo\" Suite",
+            suiteTitle: "The \"GENCEEY\" Suite",
             suiteDescription: "Get a complete digital overhaul. Identity, strategy, and engineering in one master package.",
             btn: "INITIATE TRANSMISSION"
           },
           aiLab: {
-            badge: "CRISPO INTELLIGENCE ENGINE v2.0",
+            badge: "GENCEEY INTELLIGENCE ENGINE v2.0",
             titleFirstLine: "Project",
             titleSecondLine: "Brainstormer.",
             description: "Unleash the full potential of your next venture. Our neural network distills complex visions into actionable 10x roadmaps.",
@@ -300,17 +300,17 @@ export default function AdminPage() {
             offerBtn: "CATCH ME (15% OFF)"
           },
           splash: {
-            text: "CRISPO DIGITAL",
+            text: "GENCEEY DIGITAL",
             duration: 2500,
             enabled: true
           },
           whatsappBot: {
             number: "1234567890",
-            message: "Hello Crispo! I'm interested in your services.",
+            message: "Hello GENCEEY! I'm interested in your services.",
             enabled: true
           },
           levicon: {
-            text: "CRISPO-ZHOYOTO",
+            text: "GENCEEY-ZHOYOTO",
             enabled: true
           },
           demos: {
@@ -322,7 +322,7 @@ export default function AdminPage() {
             caseStudyBtnText: "Case Study"
           },
           footer: {
-  copyrightLine: "Crispo Digital Agency. Engineered with Magic.",
+  copyrightLine: "GENCEEY Digital Agency. Engineered with Magic.",
   policyText: "Policy",
   faqText: "Neural Sync (FAQ)",
   socialLinks: {
@@ -674,7 +674,7 @@ export default function AdminPage() {
   };
 
   const handleAddProjectPreset = async () => {
-    if (!confirm('Load the 6 official Crispo engineering presets into the repository?')) return;
+    if (!confirm('Load the 6 official GENCEEY engineering presets into the repository?')) return;
     setIsSaving(true);
     try {
       const presets: Partial<Demo>[] = [
@@ -818,7 +818,7 @@ export default function AdminPage() {
             <SettingsIcon className="w-10 h-10" />
           </div>
           <h1 className="text-4xl font-black text-white tracking-tight mb-4">Master Access.</h1>
-          <p className="text-zinc-400 font-medium mb-12 italic">Restricted to authorized Crispo engineers only.</p>
+          <p className="text-zinc-400 font-medium mb-12 italic">Restricted to authorized GENCEEY engineers only.</p>
           <button 
             onClick={handleLogin}
             className="w-full bg-white text-zinc-900 font-black py-5 rounded-2xl tracking-[0.2em] shadow-2xl hover:scale-105 transition-transform"
@@ -1045,7 +1045,7 @@ export default function AdminPage() {
                   />
                 </div>
                 <div className="col-span-full pt-6 border-t border-zinc-900">
-                  <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-6">"CRISPO" Suite (CTA Banner)</p>
+                  <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-6">"GENCEEY" Suite (CTA Banner)</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-2">Banner Title</label>
@@ -1470,7 +1470,7 @@ export default function AdminPage() {
                 <div className="flex gap-4">
                   <button 
                     onClick={() => {
-                      if (!confirm('Load the 3 official Crispo capability presets?')) return;
+                      if (!confirm('Load the 3 official GENCEEY capability presets?')) return;
                       if (!cms) return;
                       const presets: any = {
                         'web-app-demos': {
@@ -1819,14 +1819,14 @@ export default function AdminPage() {
                           socialMedia: { ...settings.socialMedia, [platform]: e.target.value }
                         })}
                         className="w-full bg-black border border-zinc-800 rounded-2xl p-5 text-white font-black focus:outline-none focus:border-cyan-900"
-                        placeholder={`https://${platform}.com/crispo`}
+                        placeholder={`https://${platform}.com/genceey`}
                       />
                     </div>
                   ))}
                 </div>
                 <button 
                   onClick={() => {
-                    if (confirm('Load official Crispo social connectivity protocols?')) {
+                    if (confirm('Load official GENCEEY social connectivity protocols?')) {
                       setSettings({
                         ...settings,
                         socialMedia: {
