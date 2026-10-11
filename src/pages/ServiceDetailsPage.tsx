@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Laptop, Search, Palette, ArrowLeft, ArrowRight, CheckCircle2, Zap, Sparkles, Globe, ShieldCheck } from 'lucide-react';
 import { CMSContext } from '../App';
 
-const servicesData = [
+export const servicesData = [
   {
     id: 'web-app-demos',
     icon: Laptop,
