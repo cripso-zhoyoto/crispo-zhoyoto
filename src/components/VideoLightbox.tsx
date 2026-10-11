@@ -152,7 +152,7 @@ export default function VideoLightbox({
 
             <div className="pt-6 border-t border-zinc-900">
               <span className="block text-[8px] font-black tracking-[0.2em] uppercase text-zinc-600 text-center">
-                Crispo Cinema Dynamic Playlist v2.6
+                GENCEEY Cinema Dynamic Playlist v2.6
               </span>
             </div>
           </div>
