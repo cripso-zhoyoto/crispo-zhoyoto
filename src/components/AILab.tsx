@@ -71,7 +71,11 @@ export default function AILab({ cms }: { cms?: any }) {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setHistory(data);
     }, (err) => {
-      handleFirestoreError(err, OperationType.GET, path);
+      try {
+        handleFirestoreError(err, OperationType.GET, path);
+      } catch (handled) {
+        console.warn("Handled blueprints listener error:", handled);
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -95,7 +99,7 @@ export default function AILab({ cms }: { cms?: any }) {
 
   const copyToClipboard = (item: any, e: React.MouseEvent) => {
     e.stopPropagation();
-    const content = `CRISPO TERMINAL MANIFESTO
+    const content = `GENCEEY TERMINAL MANIFESTO
 PROJECT TYPE: ${item.category?.toUpperCase() || 'GENERAL'}
 IDEA: ${item.idea}
 
@@ -193,7 +197,7 @@ ${item.seoStrategy}`;
             className="inline-flex items-center space-x-3 px-6 py-2 rounded-full bg-white border border-zinc-200 shadow-sm text-purple-600 font-black tracking-widest uppercase text-[10px] mb-8"
           >
             <Sparkles className="w-3 h-3" />
-            <span>{cms?.badge || 'CRISPO INTELLIGENCE ENGINE v2.0'}</span>
+            <span>{(cms?.badge ? cms.badge.replace(/crispo/gi, 'GENCEEY') : 'GENCEEY INTELLIGENCE ENGINE v2.0')}</span>
           </motion.div>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
