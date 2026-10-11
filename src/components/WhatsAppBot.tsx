@@ -16,7 +16,7 @@ export default function WhatsAppBot({ cms }: WhatsAppBotProps) {
   
   const isEnabled = cms?.enabled ?? true;
   const number = cms?.number || '1234567890';
-  const message = cms?.message || "Hello! I'm interested in your services.";
+  const message = (cms?.message ? cms.message.replace(/crispo/gi, 'GENCEEY') : "Hello GENCEEY! I'm interested in your services.");
 
   if (!isEnabled || isDismissed) return null;
 
