@@ -12,7 +12,7 @@ export default function FAQPage() {
 
   const faqs = [
     {
-      q: "What defines a 'Crispo' project?",
+      q: "What defines a 'GENCEEY' project?",
       a: "It's a marriage of high-performance engineering and behavioral psychology. We don't just build sites; we build interaction protocols that drive actual business outcomes.",
       icon: Zap
     },
@@ -28,7 +28,7 @@ export default function FAQPage() {
     },
     {
       q: "Can I manage my own content?",
-      a: "Absolutely. Our 'Crispo Command Center' provides a bespoke admin panel tailored to your specific database needs.",
+      a: "Absolutely. Our 'GENCEEY Command Center' provides a bespoke admin panel tailored to your specific database needs.",
       icon: BarChart3
     }
   ];
