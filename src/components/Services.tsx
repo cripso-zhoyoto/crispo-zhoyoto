@@ -102,7 +102,7 @@ export default function Services({ cms }: { cms?: any }) {
         >
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 dark:opacity-5" />
           <div className="relative z-10 flex-1 text-center md:text-left">
-            <h3 className="text-4xl font-black mb-4 tracking-tight">{cms?.suiteTitle || 'The "Crispo" Suite'}</h3>
+            <h3 className="text-4xl font-black mb-4 tracking-tight">{(cms?.suiteTitle ? cms.suiteTitle.replace(/crispo/gi, 'GENCEEY') : 'The "GENCEEY" Suite')}</h3>
             <p className="text-zinc-400 dark:text-zinc-500 text-xl max-w-xl font-medium">{cms?.suiteDescription || 'Get a complete digital overhaul. Identity, strategy, and engineering in one master package.'}</p>
           </div>
           <motion.button 
