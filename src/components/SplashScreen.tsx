@@ -39,7 +39,7 @@ export default function SplashScreen({ cms, onComplete }: SplashScreenProps) {
           className="mb-8"
         >
           <span className="font-sans font-black text-5xl md:text-7xl tracking-tighter text-black">
-            {cms?.title || 'CRISPO'}<span className="text-cyan-500">.</span>
+            {(cms?.title ? cms.title.replace(/crispo/gi, 'GENCEEY') : 'GENCEEY')}<span className="text-cyan-500">.</span>
           </span>
         </motion.div>
 
