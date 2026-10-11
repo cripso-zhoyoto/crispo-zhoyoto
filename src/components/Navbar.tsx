@@ -73,7 +73,7 @@ export default function Navbar({ cms }: { cms?: any }) {
             </AnimatePresence>
             <Link to="/" className="flex-shrink-0 cursor-pointer">
               <span className={`font-sans font-black text-2xl tracking-tighter transition-colors duration-500 ${isScrolled ? 'text-white' : 'text-black'}`}>
-                CRISPO<span className="text-cyan-500">.</span>
+                GENCEEY<span className="text-cyan-500">.</span>
               </span>
             </Link>
           </div>
