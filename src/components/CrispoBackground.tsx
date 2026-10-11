@@ -230,7 +230,7 @@ const CrispoBackground: React.FC = () => {
                   transition: 'all 1s ease'
                 }}
               >
-                crispo
+                genceey
               </p>
               <p style={{ marginTop: '20px', fontSize: '20px' }}>
                 <a 
